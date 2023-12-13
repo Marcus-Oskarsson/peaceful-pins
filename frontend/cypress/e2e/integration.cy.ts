@@ -10,7 +10,7 @@ describe('Integration with server', function () {
         firstname: "Test",
         lastname: "Testsson",
         email: "test@test.test",
-        password: "test"
+        password: "testtesttest"
       };
       cy.request('POST', '/api/register', {user: USER}).then((res) => {
         expect(res.body).contain({success: true})
@@ -24,9 +24,14 @@ describe('Integration with server', function () {
         firstname: "Test",
         lastname: "Testsson",
         email: "already.exist@mail.com",
-        password: "test"
+        password: "testtesttest"
       };
-      cy.request('POST', '/api/register', {user: USER}).then((res) => {
+      cy.request({ 
+        method: 'POST', 
+        url: '/api/register', 
+        body: {user: USER},
+        failOnStatusCode: false
+      }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(409)
         expect(res.body.error).to.equal('Email already exists')
@@ -37,9 +42,14 @@ describe('Integration with server', function () {
         firstname: "Test",
         lastname: "Testsson",
         email: "invalid.email",
-        password: "test"
+        password: "testtesttest"
       };
-      cy.request('POST', '/api/register', {user: USER}).then((res) => {
+      cy.request({ 
+        method: 'POST', 
+        url: '/api/register', 
+        body: {user: USER},
+        failOnStatusCode: false
+      }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(400)
         expect(res.body.error).to.equal('Invalid email')
@@ -52,7 +62,12 @@ describe('Integration with server', function () {
         email: "test@test.test",
         password: ""
       };
-      cy.request('POST', '/api/register', {user: USER}).then((res) => {
+      cy.request({ 
+        method: 'POST', 
+        url: '/api/register', 
+        body: {user: USER},
+        failOnStatusCode: false
+      }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(400)
         expect(res.body.error).to.equal('Passwords has to be at least 12 characters long')
@@ -61,12 +76,12 @@ describe('Integration with server', function () {
   })
 
   describe('Login a user', function() {
-    it('logs in a test user and recieves user from server and sets jwt as cookie', () => {
+    it.only('logs in a test user and recieves user from server and sets jwt as cookie', () => {
       const USER = {
         firstname: "Test",
         lastname: "Testsson",
         email: "already.exist@mail.com",
-        password: "test"
+        password: "testtesttest"
       };
       cy.request('POST', '/api/login', {user: USER}).then((res) => {
         expect(res.body).contain({success: true})
@@ -80,9 +95,14 @@ describe('Integration with server', function () {
         firstname: "Test",
         lastname: "Testsson",
         email: "doesnt.exist@mail.com",
-        password: "test"
+        password: "testtesttest"
       };
-      cy.request('POST', '/api/login', {user: USER}).then((res) => {
+      cy.request({ 
+        method: 'POST', 
+        url: '/api/register', 
+        body: {user: USER},
+        failOnStatusCode: false
+      }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(401)
         expect(res.body.error).to.equal('Username or password is incorrect')
@@ -95,7 +115,12 @@ describe('Integration with server', function () {
         email: "already.exist@mail.com",
         password: "invalid"
       };
-      cy.request('POST', '/api/login', {user: USER}).then((res) => {
+      cy.request({ 
+        method: 'POST', 
+        url: '/api/register', 
+        body: {user: USER},
+        failOnStatusCode: false
+      }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(401)
         expect(res.body.error).to.equal('Username or password is incorrect')

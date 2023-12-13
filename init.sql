@@ -1,18 +1,28 @@
-DROP TABLE IF EXISTS PERSON;
-DROP TABLE IF EXISTS FRIENDSHIP;
-DROP TABLE IF EXISTS POST;
 DROP TABLE IF EXISTS REACTION;
+DROP TABLE IF EXISTS POST;
+DROP TABLE IF EXISTS FRIENDSHIP;
+DROP TABLE IF EXISTS PERSON;
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 
-CREATE TYPE friendRequestStatus AS ENUM ('pending', 'accepted', 'rejected');
-CREATE TYPE visibility AS ENUM ('public', 'friends');
+DO $$ BEGIN
+  CREATE TYPE friendRequestStatus AS ENUM ('pending', 'accepted', 'rejected');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE visibility AS ENUM ('public', 'friends');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS PERSON (
   personId SERIAL PRIMARY KEY,
   personFirstname VARCHAR(50) NOT NULL,
   personLastname VARCHAR(50) NOT NULL,
   personEmail VARCHAR(100) UNIQUE NOT NULL,
+  personProfilePicture TEXT DEFAULT 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
   personPassword TEXT NOT NULL,
   personCreatedAt TIMESTAMP DEFAULT NOW(),
   personUpdatedAt TIMESTAMP DEFAULT NOW()
@@ -58,7 +68,8 @@ CREATE TABLE IF NOT EXISTS REACTION (
 INSERT INTO PERSON (personFirstname, personLastname, personEmail, personPassword)
 VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
         ('Seneca', 'the Younger', 's.y@mail.com', '123456'),
-        ('Epictetus', 'of Hierapolis', 'e.h@mail.com', '123456');
+        ('Epictetus', 'of Hierapolis', 'e.h@mail.com', '123456'),
+        ('Test', 'Testsson', 'already.exist@mail.com', 'testtesttest');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
 VALUES (1, 2, 'accepted');
