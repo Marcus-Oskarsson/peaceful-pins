@@ -1,7 +1,8 @@
 describe('Integration with server', function () {
   this.beforeEach(() => {
     cy.visit("http://localhost:5173")
-    cy.request('POST', '/api/reset') // reset database
+    // cy.request('POST', '/api/reset') // reset database
+    cy.resetDatabase()
   })
 
   describe('Register a new user', function() {
@@ -76,10 +77,10 @@ describe('Integration with server', function () {
   })
 
   describe('Login a user', function() {
-    it.only('logs in a test user and recieves user from server and sets jwt as cookie', () => {
+    it('logs in a test user and recieves user from server and sets jwt as cookie', () => {
       const USER = {
-        firstname: "Test",
-        lastname: "Testsson",
+        // firstname: "Test",
+        // lastname: "Testsson",
         email: "already.exist@mail.com",
         password: "testtesttest"
       };
@@ -99,7 +100,7 @@ describe('Integration with server', function () {
       };
       cy.request({ 
         method: 'POST', 
-        url: '/api/register', 
+        url: '/api/login', 
         body: {user: USER},
         failOnStatusCode: false
       }).then((res) => {
@@ -117,7 +118,7 @@ describe('Integration with server', function () {
       };
       cy.request({ 
         method: 'POST', 
-        url: '/api/register', 
+        url: '/api/login', 
         body: {user: USER},
         failOnStatusCode: false
       }).then((res) => {
