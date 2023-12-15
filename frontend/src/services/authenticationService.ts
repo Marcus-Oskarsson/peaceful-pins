@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
 import { User } from '@types';
@@ -11,12 +11,17 @@ const authService = axios.create({
 });
 
 async function login(userData: { email: string; password: string }) {
-  const response = await authService.post<Response>('/login', userData);
+  const response = await authService.post<AxiosResponse<User>>('/login', {
+    user: userData,
+  });
   return response.data;
 }
 
 async function register(userData: User) {
-  const response = await authService.post<Response>('/register', userData);
+  const response = await authService.post<AxiosResponse<User>>(
+    '/register',
+    userData,
+  );
   return response.data;
 }
 

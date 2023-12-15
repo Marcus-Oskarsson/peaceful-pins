@@ -1,137 +1,97 @@
+import { Navigate } from 'react-router-dom';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+
+import { useLogin } from '@services/authenticationService';
+
 import { Button } from '@components/shared/Button';
 import { LabeledInput } from '@components/shared/LabeledInput';
+import { Loading } from '@components/shared/Loading';
 
-export function LoginForm() {
-  return (
-    <div>
-      <h1>Login</h1>
-      <LabeledInput
-        label="Email"
-        type="email"
-        autoComplete="true"
-        placeholder="Enter your email address"
-      />
-      <LabeledInput
-        label="Password"
-        type="password"
-        minLength={4}
-        title="Password must be at least 12 characters long."
-        placeholder="12 characters or more"
-      />
-      <Button variant="primary">Login</Button>
-    </div>
-  );
+import './LoginForm.scss';
+import { AxiosError } from 'axios';
+
+interface Values {
+  email: string;
+  password: string;
 }
 
-// import { useUser } from '@hooks';
+type CustomResponseError = {
+  response: AxiosError & {
+    data: {
+      error: string;
+    };
+  };
+};
 
-// type LoginUser = {
-//   email: string;
-//   password: string;
-// };
+export function LoginForm() {
+  const loginUser = useLogin();
 
-// type inputError = {
-//   email?: string | null;
-//   password?: string | null;
-// };
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: Yup.string().required('Password is required'),
+  });
 
-// export function LoginForm() {
-//   const [loginUser, setLoginUser] = useState<LoginUser>({
-//     email: '',
-//     password: '',
-//   });
-//   const [errors, setErrors] = useState<inputError>({
-//     email: null,
-//     password: null,
-//   });
-//   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-//   const { useLogin } = useUser();
-//   const { mutate, data, isSuccess } = useLogin();
+  function handleSubmit(values: Values) {
+    loginUser.mutate(values, {
+      onSuccess: () => {
+        // TODO Make fancy animation
+        return <Navigate to="/profile" />;
+      },
+    });
+  }
 
-//   function validateEmail(email: LoginUser['email']) {
-//     // Hämtade regex från https://www.simplilearn.com/tutorials/javascript-tutorial/email-validation-in-javascript
-//     const emailRegex =
-//       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-//     if (!emailRegex.test(email)) {
-//       setErrors({ ...errors, email: 'Please enter a valid email address.' });
-//       return;
-//     }
-//     setErrors({ ...errors, email: null });
-//   }
-
-//   function validatePassword(password: LoginUser['password']) {
-//     if (password.length < 4) {
-//       setErrors({
-//         ...errors,
-//         password: 'Password must be at least 12 characters long.',
-//       });
-//       return;
-//     }
-//     setErrors({ ...errors, password: null });
-//   }
-
-//   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
-//     const email = e.target.value;
-//     setLoginUser({ ...loginUser, email });
-//     if (hasSubmitted) {
-//       validateEmail(email);
-//     }
-//   }
-
-//   function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
-//     const password = e.target.value;
-//     setLoginUser({ ...loginUser, password });
-//     if (hasSubmitted) {
-//       validatePassword(password);
-//     }
-//   }
-
-//   async function handleSubmit(e: React.FormEvent) {
-//     e.preventDefault();
-//     setHasSubmitted(true);
-//     mutate(loginUser);
-//   }
-
-//   function readyToSubmit() {
-//     return (
-//       !(errors.email || errors.password) &&
-//       loginUser.email.length > 0 &&
-//       loginUser.password.length >= 4
-//     );
-//   }
-
-//   if (isSuccess) {
-//     console.log(data);
-//   }
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <LabeledInput
-//         label={'Email'}
-//         type="email"
-//         autoComplete="true"
-//         value={loginUser.email}
-//         onChange={handleEmailChange}
-//         placeholder="Enter your email address"
-//       />
-//       {errors.email && hasSubmitted && <p>{errors.email}</p>}
-//       <LabeledInput
-//         label={'Password'}
-//         type="password"
-//         value={loginUser.password}
-//         minLength={4}
-//         onChange={handlePasswordChange}
-//         title="Password must be at least 12 characters long."
-//         placeholder="12 characters or more"
-//       />
-//       {errors.password && hasSubmitted && <p>{errors.password}</p>}
-//       <Button
-//         {...(readyToSubmit()
-//           ? { variant: 'primary' }
-//           : { variant: 'disabled', disabled: true })}
-//       >
-//         Login
-//       </Button>
-//     </form>
-//   );
-// };
+  return (
+    <Formik
+      initialValues={{ email: '', password: '' }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ errors, touched }) => (
+        <Form>
+          <Field
+            as={LabeledInput}
+            label="Email"
+            type="email"
+            name="email"
+            autoComplete="true"
+            // placeholder="Enter your email address"
+            data-test="email-input"
+          />
+          {errors.email && touched.email && (
+            <p data-test="error-message" className="input-error">
+              {errors.email}
+            </p>
+          )}
+          <Field
+            as={LabeledInput}
+            label="Password"
+            type="password"
+            name="password"
+            // placeholder="Enter your password"
+            data-test="password-input"
+          />
+          {errors.password && touched.password && (
+            <p data-test="error-message" className="input-error">
+              {errors.password}
+            </p>
+          )}
+          <Button data-test="login-button" variant="primary" type="submit">
+            Login
+          </Button>
+          {loginUser.isError && (
+            <p data-test="error-message">
+              {
+                (loginUser.error as unknown as CustomResponseError).response
+                  .data.error
+              }
+            </p>
+          )}
+          {loginUser.isPending || <Loading />}
+        </Form>
+      )}
+    </Formik>
+  );
+}

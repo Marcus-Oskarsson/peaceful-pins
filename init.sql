@@ -69,7 +69,7 @@ INSERT INTO PERSON (personFirstname, personLastname, personEmail, personPassword
 VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
         ('Seneca', 'the Younger', 's.y@mail.com', '123456'),
         ('Epictetus', 'of Hierapolis', 'e.h@mail.com', '123456'),
-        ('Test', 'Testsson', 'already.exist@mail.com', 'testtesttest');
+        ('Test', 'Testsson', 'already.exist@mail.com', '$2b$08$ZmTFFf05dpb8VD6VjVvuJ.7r4iyG8Slu1o1lgSftNIBLAEW9iLAgq');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
 VALUES (1, 2, 'accepted');

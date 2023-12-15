@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 // TODO if logged in, show logout button instead of login and register
 
-const Header = () => {
+export function Header() {
   return (
     <div>
       <nav>
@@ -16,6 +16,4 @@ const Header = () => {
       </nav>
     </div>
   );
-};
-
-export default Header;
+}

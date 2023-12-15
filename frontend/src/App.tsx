@@ -3,8 +3,7 @@ import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { queryClient } from '@utils/queryClient';
-// import { Header } from '@components';
-// import { Home, Login, Register } from '@pages';
+import { Header } from '@components/Header';
 import { Login } from '@pages/Login';
 import { Register } from '@pages/Register';
 import { Home } from '@pages/Home';
@@ -13,7 +12,7 @@ const Root = () => {
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        {/* <Header /> */}
+        <Header />
         <main>
           <Outlet />
         </main>

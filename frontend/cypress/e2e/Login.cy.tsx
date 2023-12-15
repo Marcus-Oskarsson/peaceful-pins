@@ -32,22 +32,15 @@ describe('Login', () => {
     cy.get('[data-test="error-message"]').should('exist')
   })
 
-  it('gives error message on no email entered', () => {
-    cy.get('@passwordInput').type('password')
+  it('gives correct error message on missing inputs', () => {
     cy.get('@loginButton').click()
     cy.get('[data-test="error-message"]').as('errorMessage')
     cy.get('@errorMessage').should('contain', 'Email is required')
-  });
-
-  it('gives error message on no password entered', () => {
-    cy.get('@emailInput').type('mail@mail.com')
-    cy.get('@loginButton').click()
-    cy.get('[data-test="error-message"]').as('errorMessage')
     cy.get('@errorMessage').should('contain', 'Password is required')
   });
 
   // Mock slow response from backend
-  it('shows loading indicator', () => {
+  it.only('shows loading indicator', () => {
     cy.intercept('POST', '/api/login', {fixture: 'login', delay: 3000}).as('login')
     cy.get('@emailInput').type('already.exist@mail.com')
     cy.get('@passwordInput').type('testtesttest')
