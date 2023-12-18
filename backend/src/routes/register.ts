@@ -85,7 +85,9 @@ router.post('/register', (req: Request, res: Response) => {
     } catch (error) {
       const err = error as Error & { code: string };
       if (err.code === '23505') {
-        res.status(409).json({ success: false, error: 'Username or email already exists' });
+        res
+          .status(409)
+          .json({ success: false, error: 'Username or email already exists' });
       } else {
         console.error(err);
         res.status(500).json({ success: false, error: 'Something went wrong' });
