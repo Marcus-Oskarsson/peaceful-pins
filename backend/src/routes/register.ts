@@ -38,9 +38,10 @@ router.post('/register', (req: Request, res: Response) => {
   }
 
   if (!validPassword) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Passwords has to be at least 12 characters long' });
+    return res.status(400).json({
+      success: false,
+      error: 'Passwords has to be at least 12 characters long',
+    });
   }
 
   const sql = `
@@ -68,24 +69,23 @@ router.post('/register', (req: Request, res: Response) => {
         profilePicture: user.personProfilePicture,
       };
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-      })
-      .status(201)
-      .json({
-        success: true,
-        message: 'User created',
-        data: {
-          user: newUser,
-        },
-      });
-
+      res
+        .cookie('token', token, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24, // 1 day
+        })
+        .status(201)
+        .json({
+          success: true,
+          message: 'User created',
+          data: {
+            user: newUser,
+          },
+        });
     } catch (error) {
       const err = error as Error & { code: string };
       if (err.code === '23505') {
-        console.log("MITT ERROR: ", err);
-        res.status(409).json({ success: false, error: 'Email already exists' });
+        res.status(409).json({ success: false, error: 'Username or email already exists' });
       } else {
         console.error(err);
         res.status(500).json({ success: false, error: 'Something went wrong' });

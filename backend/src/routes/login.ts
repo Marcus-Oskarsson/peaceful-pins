@@ -35,38 +35,53 @@ router.post('/login', async (req: Request, res: Response) => {
     SELECT personPassword, personFirstname, personLastname, personEmail, personProfilePicture FROM PERSON
     WHERE personEmail = $1`;
 
-      try {
-        const result: QueryResult<User> = await client.query(sql, [email]);
+  try {
+    const result: QueryResult<User> = await client.query(sql, [email]);
 
-        if(result.rowCount === 0) {
-          res.status(401).json({ success: false, error: 'Username or password is incorrect' });
+    if (result.rowCount === 0) {
+      res
+        .status(401)
+        .json({ success: false, error: 'Username or password is incorrect' });
+      return;
+    }
+
+    bcrypt.compare(
+      password,
+      result.rows[0].personpassword,
+      function (err, isCorrect) {
+        if (err) {
+          res
+            .status(500)
+            .json({ success: false, error: 'Something went wrong' });
+          return;
+        }
+        if (!isCorrect) {
+          res.status(401).json({
+            success: false,
+            error: 'Username or password is incorrect',
+          });
           return;
         }
 
-        bcrypt.compare(password, result.rows[0].personpassword, function(err, isCorrect) {
-          if (err) {
-            res.status(500).json({ success: false, error: 'Something went wrong' });
-            return;
-          }
-          if (!isCorrect) {
-            res.status(401).json({ success: false, error: 'Username or password is incorrect' });
-            return;
-          }
-
-          const user = result.rows[0];
-          const token = jwt.sign({ id: user.personid, role: 'user' }, jwtSecret!, {
+        const user = result.rows[0];
+        const token = jwt.sign(
+          { id: user.personid, role: 'user' },
+          jwtSecret!,
+          {
             expiresIn: '24h',
-          });
+          },
+        );
 
-          const newUser = {
-            firstName: user.personfirstname,
-            lastName: user.personlastname,
-            email: user.personemail,
-            profilePicture: user.personprofilepicture,
-          };
-    
-          res.cookie('token', token, {
-            httpOnly: true,
+        const newUser = {
+          firstName: user.personfirstname,
+          lastName: user.personlastname,
+          email: user.personemail,
+          profilePicture: user.personprofilepicture,
+        };
+
+        res
+          .cookie('token', token, {
+            httpOnly: false,
             maxAge: 1000 * 60 * 60 * 24, // 1 day
           })
           .status(200)
@@ -77,16 +92,15 @@ router.post('/login', async (req: Request, res: Response) => {
               user: newUser,
             },
           });
-        })
-
-    } catch (error) {
-      const err = error as Error & { code: string };
-      if (err.code === '23505') {
-        console.log("MITT ERROR: ", err);
-        res.status(409).json({ success: false, error: 'Email already exists' });
-      } else {
-        console.error(err);
-        res.status(500).json({ success: false, error: 'Something went wrong' });
-      }
+      },
+    );
+  } catch (error) {
+    const err = error as Error & { code: string };
+    if (err.code === '23505') {
+      res.status(409).json({ success: false, error: 'Email already exists' });
+    } else {
+      console.error(err);
+      res.status(500).json({ success: false, error: 'Something went wrong' });
     }
+  }
 });
