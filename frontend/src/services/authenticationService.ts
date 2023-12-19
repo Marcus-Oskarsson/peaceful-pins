@@ -1,27 +1,33 @@
-import axios, { AxiosResponse } from 'axios';
-import { useMutation } from '@tanstack/react-query';
+import { AxiosResponse } from 'axios';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { User } from '@types';
+import { LoginCredentials, NewUser, User } from '@types';
 
-const authService = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-type': 'application/json',
-  },
-});
+import authService from '../api/axios';
 
-async function login(userData: { email: string; password: string }) {
-  const response = await authService.post<AxiosResponse<User>>('/login', {
+// const authService = axios.create({
+//   baseURL: '/api',
+//   headers: {
+//     'Content-type': 'application/json',
+//   },
+// });
+
+async function login(userData: LoginCredentials) {
+  const response = await authService.post<User>('/login', {
     user: userData,
   });
   return response.data;
 }
 
-async function register(userData: User) {
-  const response = await authService.post<AxiosResponse<User>>(
-    '/register',
-    userData,
-  );
+async function register(userData: NewUser) {
+  const response = await authService.post<AxiosResponse<User>>('/register', {
+    user: userData,
+  });
+  return response.data;
+}
+
+async function authCheck(): Promise<User> {
+  const response = await authService.get('/auth_check');
   return response.data;
 }
 
@@ -36,3 +42,16 @@ export function useRegister() {
     mutationFn: register,
   });
 }
+
+export function useAuthCheck() {
+  return useQuery({
+    queryKey: ['authCheck'],
+    queryFn: authCheck,
+  });
+}
+
+// export function useLogout() {
+//   return useMutation({
+//     mutationFn: () => authService.delete('/logout'),
+//   });
+// }

@@ -1,141 +1,127 @@
+import { Navigate } from 'react-router-dom';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+
+import { useRegister } from '@services/authenticationService';
+
 import { Button } from '@components/shared/Button';
 import { LabeledInput } from '@components/shared/LabeledInput';
+import { Loading } from '@components/shared/Loading';
+
+// import './RegisterForm.scss';
+import { AxiosError } from 'axios';
+import { NewUser } from '@types';
+
+// interface Values {
+//   firstname: string;
+//   lastname: string;
+//   email: string;
+//   password: string;
+// }
+
+type CustomResponseError = {
+  response: AxiosError & {
+    data: {
+      error: string;
+    };
+  };
+};
 
 export function RegisterForm() {
+  const registerUser = useRegister();
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: Yup.string().required('Password is required'),
+  });
+
+  function handleSubmit(newUser: NewUser) {
+    registerUser.mutate(newUser, {
+      onSuccess: () => {
+        // TODO Make fancy animation
+      },
+    });
+  }
+
+  if (registerUser.isSuccess) {
+    return <Navigate to="/profile" replace={true} />;
+  }
+
   return (
-    <div>
-      <h1>Register</h1>
-      <LabeledInput
-        label="Email"
-        type="email"
-        autoComplete="true"
-        placeholder="Enter your email address"
-      />
-      <LabeledInput
-        label="Password"
-        type="password"
-        minLength={4}
-        title="Password must be at least 12 characters long."
-        placeholder="12 characters or more"
-      />
-      <Button variant="primary">Register</Button>
-    </div>
+    <Formik
+      initialValues={{ email: '', password: '', firstName: '', lastName: '' }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ errors, touched }) => (
+        <Form>
+          <Field
+            as={LabeledInput}
+            label="Firstname"
+            type="text"
+            name="firstName"
+            autoComplete="true"
+            data-test="firstname-input"
+          />
+          {errors.firstName && touched.firstName && (
+            <p data-test="error-message" className="input-error">
+              {errors.firstName}
+            </p>
+          )}
+          <Field
+            as={LabeledInput}
+            label="Lastname"
+            type="text"
+            name="lastName"
+            autoComplete="true"
+            data-test="lastname-input"
+          />
+          {errors.lastName && touched.lastName && (
+            <p data-test="error-message" className="input-error">
+              {errors.lastName}
+            </p>
+          )}
+          <Field
+            as={LabeledInput}
+            label="Email"
+            type="email"
+            name="email"
+            autoComplete="true"
+            data-test="email-input"
+          />
+          {errors.email && touched.email && (
+            <p data-test="error-message" className="input-error">
+              {errors.email}
+            </p>
+          )}
+          <Field
+            as={LabeledInput}
+            label="Password"
+            type="password"
+            name="password"
+            data-test="password-input"
+          />
+          {errors.password && touched.password && (
+            <p data-test="error-message" className="input-error">
+              {errors.password}
+            </p>
+          )}
+          <Button data-test="register-button" variant="primary" type="submit">
+            Login
+          </Button>
+          {registerUser.isError && (
+            <p data-test="error-message">
+              {
+                (registerUser.error as unknown as CustomResponseError).response
+                  .data.error
+              }
+            </p>
+          )}
+          {registerUser.isPending && <Loading />}
+        </Form>
+      )}
+    </Formik>
   );
 }
-
-// import { useUser } from '@hooks';
-
-// type RegisterUser = {
-//   email: string;
-//   firstName: string;
-//   lastName: string;
-//   password: string;
-// };
-
-// type inputError = string | null;
-
-// export function RegisterForm() {
-//   const [registerUser, setRegisterUser] = useState<RegisterUser>({
-//     email: '',
-//     firstName: '',
-//     lastName: '',
-//     password: '',
-//   });
-//   const [emailError, setEmailError] = useState<inputError>(null);
-//   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-//   const { useRegister } = useUser();
-//   const { mutate, data, isSuccess } = useRegister();
-
-//   function validateEmail(email: RegisterUser['email']) {
-//     // Hämtade regex från https://www.simplilearn.com/tutorials/javascript-tutorial/email-validation-in-javascript
-//     const emailRegex =
-//       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-//     if (!emailRegex.test(email)) {
-//       setEmailError('Please enter a valid email address.');
-//       return;
-//     }
-//     setEmailError(null);
-//   }
-
-//   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
-//     const email = e.target.value;
-//     setRegisterUser({ ...registerUser, email });
-//     if (hasSubmitted) {
-//       validateEmail(email);
-//     }
-//   }
-
-//   async function handleSubmit(e: React.FormEvent) {
-//     e.preventDefault();
-//     setHasSubmitted(true);
-//     mutate(registerUser);
-//   }
-
-//   function readyToSubmit() {
-//     return (
-//       !emailError &&
-//       registerUser.email.length > 0 &&
-//       registerUser.password.length >= 4 &&
-//       registerUser.firstName.length > 0 &&
-//       registerUser.lastName.length > 0
-//     );
-//   }
-
-//   if (isSuccess) {
-//     console.log(data);
-//   }
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <LabeledInput
-//         label={'Email'}
-//         type="email"
-//         autoComplete="true"
-//         value={registerUser.email}
-//         onChange={handleEmailChange}
-//         placeholder="Enter your email address"
-//       />
-//       {emailError && hasSubmitted && <p>{emailError}</p>}
-//       <LabeledInput
-//         label={'Password'}
-//         type="password"
-//         value={registerUser.password}
-//         minLength={4}
-//         onChange={(e) =>
-//           setRegisterUser({ ...registerUser, password: e.target.value })
-//         }
-//         title="Password must be at least 12 characters long."
-//         placeholder="12 characters or more"
-//       />
-//       <LabeledInput
-//         label={'First Name'}
-//         type="text"
-//         value={registerUser.firstName}
-//         minLength={1}
-//         onChange={(e) =>
-//           setRegisterUser({ ...registerUser, firstName: e.target.value })
-//         }
-//         placeholder="First name"
-//       />
-//       <LabeledInput
-//         label={'Last Name'}
-//         type="text"
-//         value={registerUser.lastName}
-//         minLength={1}
-//         onChange={(e) =>
-//           setRegisterUser({ ...registerUser, lastName: e.target.value })
-//         }
-//         placeholder="Last name"
-//       />
-//       <Button
-//         {...(readyToSubmit()
-//           ? { variant: 'primary' }
-//           : { variant: 'disabled', disabled: true })}
-//       >
-//         Login
-//       </Button>
-//     </form>
-//   );
-// };
-
-// export default RegisterForm;

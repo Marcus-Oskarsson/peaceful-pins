@@ -38,9 +38,12 @@ export function LoginForm() {
     loginUser.mutate(values, {
       onSuccess: () => {
         // TODO Make fancy animation
-        return <Navigate to="/profile" />;
       },
     });
+  }
+
+  if (loginUser.isSuccess) {
+    return <Navigate to="/profile" replace={true} />;
   }
 
   return (
@@ -50,14 +53,13 @@ export function LoginForm() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched }) => (
-        <Form>
+        <Form className="login-form">
           <Field
             as={LabeledInput}
             label="Email"
             type="email"
             name="email"
             autoComplete="true"
-            // placeholder="Enter your email address"
             data-test="email-input"
           />
           {errors.email && touched.email && (
@@ -70,7 +72,6 @@ export function LoginForm() {
             label="Password"
             type="password"
             name="password"
-            // placeholder="Enter your password"
             data-test="password-input"
           />
           {errors.password && touched.password && (
@@ -78,7 +79,13 @@ export function LoginForm() {
               {errors.password}
             </p>
           )}
-          <Button data-test="login-button" variant="primary" type="submit">
+          <Button
+            className="btn-login"
+            data-test="login-button"
+            variant="primary"
+            type="submit"
+            size="small"
+          >
             Login
           </Button>
           {loginUser.isError && (
@@ -89,7 +96,7 @@ export function LoginForm() {
               }
             </p>
           )}
-          {loginUser.isPending || <Loading />}
+          {loginUser.isPending && <Loading />}
         </Form>
       )}
     </Formik>
