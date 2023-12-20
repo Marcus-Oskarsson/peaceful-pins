@@ -1,4 +1,4 @@
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, FieldInputProps } from 'formik';
 import { LabeledInput } from './shared/LabeledInput';
 import { Button } from './shared/Button';
 import { Loading } from './shared/Loading';
@@ -6,12 +6,12 @@ import { Loading } from './shared/Loading';
 import { useAddPost } from '@services/messageService';
 
 import { newPost } from '@types';
+import { useEffect, useState } from 'react';
 
 // TODO måste lyfta ut state till context / parent eller nån session-storage
 // Just nu försvinner det om man stänger modalen
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { use } from 'chai';
+// import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // // Skapa en ny Context
 // const FormValuesContext = createContext(null);
@@ -78,17 +78,16 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
 
   console.log(location);
   // plot location on map
-  
 
   // TODO add geolocation to post
 
   function handleSubmit(values: newPost) {
     const formData = new FormData();
-    formData.append("title", values.title);
-    formData.append("content", values.content);
-    formData.append("visibility", values.visibility);
+    formData.append('title', values.title);
+    formData.append('content', values.content);
+    formData.append('visibility', values.visibility);
     if (values.image) {
-      formData.append("image", values.image);
+      formData.append('image', values.image);
     }
     newMessage.mutate(formData, {
       onSuccess: () => {
@@ -127,16 +126,15 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
             required
             data-test="content-input"
           /> */}
-          <Field
-            as="textarea"
-            name="content"
-            id="content"
-            placeholder="Content"
-            required
-            data-test="content-input"
-            rows={5}
-          >
-          </Field>
+            <Field
+              as="textarea"
+              name="content"
+              id="content"
+              placeholder="Content"
+              required
+              data-test="content-input"
+              rows={5}
+            ></Field>
             {/* <Field>
             <label htmlFor="isPublic"></label> */}
             {/* TODO make custom toggler */}
@@ -168,26 +166,31 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
             >
               <label htmlFor="image">Add image to message</label>
             </Field> */}
-            <Field name="image">{({field, form, meta}) => (
-              <input
-                type="file"
-                onChange={(event) => {
-                  if (!event.currentTarget.files) {
-                    return;
-                  }
-                  const file = event.currentTarget.files[0];
-                  const reader = new FileReader();
+            <Field name="image">
+              {({
+                field,
+              }: {
+                field: FieldInputProps<{ image: File | null }>;
+              }) => (
+                <input
+                  type="file"
+                  onChange={(event) => {
+                    if (!event.currentTarget.files) {
+                      return;
+                    }
+                    const file = event.currentTarget.files[0];
+                    const reader = new FileReader();
 
-                  reader.onload = () => {
-                    field.onChange({
-                      target: { name: field.name, value: file },
-                    });
-                  };
+                    reader.onload = () => {
+                      field.onChange({
+                        target: { name: field.name, value: file },
+                      });
+                    };
 
-                  reader.readAsDataURL(file);
-                }}
-              />
-            )}
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              )}
             </Field>
             <Button
               className="btn-login"

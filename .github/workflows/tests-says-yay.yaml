@@ -1,0 +1,66 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgis:
+        image: postgis/postgis
+        env:
+          POSTGRES_PASSWORD: secret
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    
+    - name: Set up database credentials
+      env:
+        PGURI: ${{ secrets.PGURI }}
+      run: |
+        echo "PGURI=${PGURI}" >> $GITHUB_ENV
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Start backend server
+      run: |
+        cd backend
+        npm run build
+        node dist/index.js &
+        sleep 5
+
+    - name: Start frontend server
+      run: |
+        cd frontend
+        npm run dev &
+        sleep 5
+
+    - name: Run Cypress tests
+      run: |
+        cd frontend
+        npx cypress run

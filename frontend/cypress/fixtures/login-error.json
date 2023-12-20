@@ -1,0 +1,12 @@
+{
+  "success": false,
+  "message": "Error here",
+  "data": {
+    "user": {
+      "firstName": "Test",
+      "lastName": "Testsson",
+      "email": "test@test.test"
+    }
+  },
+  "error": "Username or password is incorrect"
+}

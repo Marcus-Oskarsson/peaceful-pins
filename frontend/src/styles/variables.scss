@@ -1,5 +1,14 @@
+@import 'https://fonts.googleapis.com/css2?family=Lobster+Two:ital@1&family=Nunito:wght@400;800;900&display=swap';
+
+$large-phone: 480px;
+$tablet: 728px;
+$desktop: 1024px;
+$large-desktop: 1440px;
 $color-1: green;
 $black: #111;
+$primary: #007bff;
+$success: #28a745;
+$danger: #dc3545;
 
 .color-1 {
   color: $color-1;

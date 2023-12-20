@@ -40,7 +40,7 @@ describe('Login', () => {
   });
 
   // Mock slow response from backend
-  it.only('shows loading indicator', () => {
+  it('shows loading indicator', () => {
     cy.intercept('POST', '/api/login', {fixture: 'login', delay: 3000}).as('login')
     cy.get('@emailInput').type('already.exist@mail.com')
     cy.get('@passwordInput').type('testtesttest')

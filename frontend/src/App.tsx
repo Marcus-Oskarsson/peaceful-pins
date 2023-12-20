@@ -7,6 +7,8 @@ import { Header } from '@components/Header';
 import { Login } from '@pages/Login';
 import { Register } from '@pages/Register';
 import { Home } from '@pages/Home';
+import { Profile } from '@pages/Profile';
+import PrivateRoutes from '@components/PrivateRoutes';
 
 const Root = () => {
   return (
@@ -25,6 +27,15 @@ const App = () => {
   const router = createBrowserRouter([
     {
       children: [
+        {
+          element: <PrivateRoutes />,
+          children: [
+            {
+              path: '/profile',
+              element: <Profile />,
+            },
+          ],
+        },
         {
           path: '/',
           element: <Home />,

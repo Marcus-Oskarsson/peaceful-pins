@@ -35,7 +35,7 @@ describe('Integration with server', function () {
       }).then((res) => {
         expect(res.body).contain({success: false})
         expect(res.status).to.equal(409)
-        expect(res.body.error).to.equal('Email already exists')
+        expect(res.body.error).to.equal('Username or email already exists')
       })
     })
     it('tries to register a user with an invalid email', () => {

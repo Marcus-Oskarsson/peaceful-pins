@@ -1,10 +1,9 @@
 // import axios from 'axios';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { newPost, Post } from '../types';
+import { Post } from '../types';
 
 import postService from '../api/axios';
-
 
 // const postService = axios.create({
 //   baseURL: '/api',
@@ -44,11 +43,11 @@ async function getPublicPosts(): Promise<Post[]> {
 }
 
 // Skapa en ny post
-async function addPost(postData) {
+async function addPost(postData: FormData) {
   const response = await postService.post('/posts', postData, {
     headers: {
       'Content-type': 'multipart/form-data',
-    }
+    },
   });
   return response.data;
 }

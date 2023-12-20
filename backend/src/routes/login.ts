@@ -32,7 +32,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
   console.log('email: ', email, 'password: ', password);
   const sql = `
-    SELECT personPassword, personFirstname, personLastname, personEmail, personProfilePicture FROM PERSON
+    SELECT personId, personPassword, personFirstname, personLastname, personEmail, personProfilePicture FROM PERSON
     WHERE personEmail = $1`;
 
   try {
@@ -64,8 +64,9 @@ router.post('/login', async (req: Request, res: Response) => {
         }
 
         const user = result.rows[0];
+        console.log('user in login:  ', user);
         const token = jwt.sign(
-          { id: user.personid, role: 'user' },
+          { userId: user.personid, role: 'user' },
           jwtSecret!,
           {
             expiresIn: '24h',

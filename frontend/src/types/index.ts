@@ -10,12 +10,32 @@ export type User = {
   posts: Post[];
 };
 
+export type NewUser = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
+
+export type LoginCredentials = {
+  email: string;
+  password: string;
+};
+
 export type Post = {
   id: string;
   author: Partial<User>;
-  text: string;
+  title: string;
+  content: string;
   createdAt: string;
   longitude: number;
   latitude: number;
   comments: Partial<Post>[];
+};
+
+export type newPost = {
+  title: string;
+  content: string;
+  visibility: 'public' | 'friends';
+  image: File | null;
 };

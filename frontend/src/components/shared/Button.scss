@@ -1,0 +1,33 @@
+@import '@styles/variables';
+
+.btn {
+  // TODO - add styles
+  cursor: pointer;
+
+  &-small {
+    padding: 8px 16px;
+  }
+
+  &-large {
+    width: 100%;
+    padding: 12px 0;
+  }
+
+  &-primary {
+    color: #fff;
+    background-color: $primary;
+    border-color: $primary;
+  }
+
+  &-success {
+    color: #fff;
+    background-color: $success;
+    border-color: $success;
+  }
+
+  &-danger {
+    color: #fff;
+    background-color: $danger;
+    border-color: $danger;
+  }
+}
