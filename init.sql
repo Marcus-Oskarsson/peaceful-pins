@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS POST;
 DROP TABLE IF EXISTS FRIENDSHIP;
 DROP TABLE IF EXISTS PERSON;
 
-CREATE EXTENSION IF NOT EXISTS postgis;
+-- CREATE EXTENSION IF NOT EXISTS postgis;
 
 DO $$ BEGIN
   CREATE TYPE friendRequestStatus AS ENUM ('pending', 'accepted', 'rejected');
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS POST (
   postImgUrl TEXT,
   postPersonId INT NOT NULL,
   postVisibility visibility NOT NULL,
-  -- postLocation POINT NOT NULL,
-  postLocation GEOGRAPHY(POINT, 4326),
+  postLocation POINT NOT NULL,
+  -- postLocation GEOGRAPHY(POINT, 4326),
   postExpiresAt TIMESTAMP DEFAULT NOW() + INTERVAL '1 DAY',
   postCreatedAt TIMESTAMP DEFAULT NOW(),
   postUpdatedAt TIMESTAMP DEFAULT NOW(),
@@ -75,7 +75,7 @@ INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendship
 VALUES (1, 2, 'accepted');
 
 INSERT INTO POST (postTitle, postContent, postImgUrl, postPersonId, postVisibility, postLocation, postExpiresAt)
-VALUES ('Lorem ipsum dolor sit amet', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla euismod, nisl vitae aliquam ultricies, nunc nisl aliquet nunc, vit', 'https://picsum.photos/200/300', 1, 'public', ST_SetSRID(ST_MakePoint(12.052471, 57.765819), 4326), NOW() + INTERVAL '1 DAY');
+VALUES ('Lorem ipsum dolor sit amet', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla euismod, nisl vitae aliquam ultricies, nunc nisl aliquet nunc, vit', 'https://picsum.photos/200/300', 1, 'public', POINT(12.052471, 57.765819), NOW() + INTERVAL '1 DAY');
 
 -- GET ALL POSTS from friends of a user (with id 2) (including the user's own posts) where the expiration date is not reached
 SELECT * FROM POST
@@ -88,14 +88,17 @@ WHERE postPersonId IN (
 ) AND postVisibility = 'public' AND postExpiresAt > NOW();
 
 -- GET ALL POSTS from friends of a user (with id 2) (including the user's own posts) where the expiration date is not reached and that are within a radius of 1000 meters from the user's location (57.7654385, 12.0381555)
-SELECT * FROM POST
-WHERE postPersonId IN (
-    SELECT friendshipPersonIdOne FROM FRIENDSHIP
-    WHERE friendshipPersonIdTwo = 2 AND friendshipStatus = 'accepted'
-    UNION
-    SELECT friendshipPersonIdTwo FROM FRIENDSHIP
-    WHERE friendshipPersonIdOne = 2 AND friendshipStatus = 'accepted'
-) AND postVisibility = 'public' AND postExpiresAt > NOW() AND ST_DWithin(postLocation::geography, ST_SetSRID(ST_MakePoint(12.056246, 57.774834), 4326)::geography, 1000);
+-- SELECT * FROM POST
+-- WHERE postPersonId IN (
+--     SELECT friendshipPersonIdOne FROM FRIENDSHIP
+--     WHERE friendshipPersonIdTwo = 2 AND friendshipStatus = 'accepted'
+--     UNION
+--     SELECT friendshipPersonIdTwo FROM FRIENDSHIP
+--     WHERE friendshipPersonIdOne = 2 AND friendshipStatus = 'accepted'
+-- ) AND postVisibility = 'public' AND postExpiresAt > NOW() AND ST_DWithin(postLocation::geography, ST_SetSRID(ST_MakePoint(12.056246, 57.774834), 4326)::geography, 1000);
+
+-- Alla posts
+SELECT * FROM POST;
 
 -- CREATE OR REPLACE FUNCTION accept_friend_request(
 --     user_id_to INTEGER,
