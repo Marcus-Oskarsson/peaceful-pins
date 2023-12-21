@@ -7,56 +7,10 @@ import { useAddPost } from '@services/messageService';
 
 import { newPost } from '@types';
 import { useEffect, useState } from 'react';
+import { number } from 'yup';
 
 // TODO måste lyfta ut state till context / parent eller nån session-storage
 // Just nu försvinner det om man stänger modalen
-
-// import React, { createContext, useContext, useEffect, useState } from 'react';
-
-// // Skapa en ny Context
-// const FormValuesContext = createContext(null);
-
-// // Skapa en Provider-komponent
-// export function FormValuesProvider({ children }) {
-//   const [formValues, setFormValues] = useState({
-//     title: '',
-//     content: '',
-//     visibility: 'friends',
-//     image: null,
-//   });
-
-//   return (
-//     <FormValuesContext.Provider value={{ formValues, setFormValues }}>
-//       {children}
-//     </FormValuesContext.Provider>
-//   );
-// }
-
-// // Skapa en anpassad hook för att använda formvärdena
-// export function useFormValues() {
-//   return useContext(FormValuesContext);
-// }
-
-// -----------------------------
-
-// import { useFormValues } from './FormValuesContext';
-
-// function MyForm() {
-//   const { formValues, setFormValues } = useFormValues();
-
-//   return (
-//     <Formik
-//       initialValues={formValues}
-//       onSubmit={(values) => {
-//         // Uppdatera formValues i Context när formuläret skickas
-//         setFormValues(values);
-//         // ...
-//       }}
-//     >
-//       {/* ... */}
-//     </Formik>
-//   );
-// }
 
 interface CreatePostModalProps {
   closeModal: () => void;
@@ -64,7 +18,7 @@ interface CreatePostModalProps {
 
 export function CreatePostModal({ closeModal }: CreatePostModalProps) {
   const newMessage = useAddPost();
-  const [location, setLocation] = useState({});
+  const [location, setLocation] = useState<{latitude: number, longitude: number}>({});
 
   // get geolocation
   useEffect(() => {
@@ -89,6 +43,7 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
     if (values.image) {
       formData.append('image', values.image);
     }
+    formData.append('coordinates', JSON.stringify(location));
     newMessage.mutate(formData, {
       onSuccess: () => {
         // TODO Make fancy animation
@@ -107,7 +62,6 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
       onSubmit={handleSubmit}
     >
       {() => (
-        // {({ errors, touched }) => (
         <>
           <button onClick={closeModal}>Close</button>
           <Form className="login-form">
@@ -118,14 +72,6 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
               name="title"
               data-test="title-input"
             />
-            {/* <Field
-            as={LabeledInput}
-            label="Content"
-            type="content"
-            name="content"
-            required
-            data-test="content-input"
-          /> */}
             <Field
               as="textarea"
               name="content"
@@ -134,38 +80,13 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
               required
               data-test="content-input"
               rows={5}
-            ></Field>
-            {/* <Field>
-            <label htmlFor="isPublic"></label> */}
-            {/* TODO make custom toggler */}
-            {/* <input type="checkbox" id="isPublic" name="isPublic" /> */}
-            {/* </Field> */}
-            {/* <Field
-              name="image"
-              id="image"
-              render={({ field }: { field: FieldInputProps<unknown> }) => (
-                <input
-                  type="file"
-                  onChange={(event) => {
-                    if (!event.currentTarget.files) {
-                      return;
-                    }
-                    const file = event.currentTarget.files[0];
-                    const reader = new FileReader();
-
-                    reader.onload = () => {
-                      field.onChange({
-                        target: { name: field.name, value: file },
-                      });
-                    };
-
-                    reader.readAsDataURL(file);
-                  }}
-                />
-              )}
-            >
-              <label htmlFor="image">Add image to message</label>
-            </Field> */}
+            />
+            <div>
+                <label htmlFor="friends">Friends</label>
+                <Field type="radio" name="visibility" id="friends" value="friends" />
+                <label htmlFor="public">Public</label>
+                <Field type="radio" name="visibility" id="public" value="public" />
+            </div>
             <Field name="image">
               {({
                 field,
