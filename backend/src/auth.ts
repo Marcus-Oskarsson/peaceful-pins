@@ -11,8 +11,6 @@ type User = {
 
 type CustomRequest = (Request & User) | JwtPayload;
 
-// interface CustomRequest extends Request { token: User | JwtPayload }
-
 export function authenticateToken(
   req: CustomRequest,
   res: Response,
@@ -23,27 +21,15 @@ export function authenticateToken(
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) throw new Error('No token provided');
     const decoded = jwt.verify(token, process.env.JWT_SECRET as Secret);
+
+    const expiresIn = new Date((decoded as User).exp * 1000);
+
+    if (new Date() > expiresIn) throw new Error('Token expired');
+    
     req.userId = (decoded as CustomRequest).userId;
 
     next();
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ success: false, error: 'Please authenticate' });
+  } catch (e: { message: string }) {
+    res.status(401).json({ success: false, error: e.message });
   }
-
-  // const authHeader = req.headers['authorization']
-  // const token = authHeader && authHeader.split(' ')[1]
-
-  // console.log("authHeader: ", authHeader)
-
-  // if (token == null) return res.status(401).json({ success: false, error: 'No token provided' })
-
-  // jwt.verify(token, process.env.JWT_SECRET as string, (err: unknown, user: ) => {
-  //   console.log("USER IS HERE: ", user)
-  //   if (err) return res.status(403).json({ success: false, error: 'Invalid token' })
-
-  //   req.userId = user.userId;
-
-  //   next()
-  // })
 }
