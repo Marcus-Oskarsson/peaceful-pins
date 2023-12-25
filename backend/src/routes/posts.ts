@@ -5,6 +5,7 @@ import 'dotenv/config';
 
 import client from '../connection';
 import { QueryResult } from 'pg';
+import { Post } from '../types';
 
 function saveImage(file) {
   const image = fs.readFileSync(file.path);
@@ -55,63 +56,179 @@ router.post(
   },
 );
 
-/* Returns all posts as locked */
-router.get('/posts', async (req: Request, res: Response) => {
-  console.log('In Get /posts');
+router.get('/posts/public', async (req: Request, res: Response) => {
+  console.log('In Get /posts/public');
 
   const userId = (req as Request & { userId: number }).userId;
 
   const sql = `
-  SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postLocation as location 
-  FROM POST p
-  JOIN PERSON p1 ON p.postAuthor = p1.personId
-  WHERE (p.postAuthor IN (
-      SELECT friendshipPersonIdOne FROM FRIENDSHIP
-      WHERE friendshipPersonIdTwo = $1 AND friendshipStatus = 'accepted'
-      UNION
-      SELECT friendshipPersonIdTwo FROM FRIENDSHIP
-      WHERE friendshipPersonIdOne = $1 AND friendshipStatus = 'accepted'
-  ) AND p.postVisibility = 'friends' AND p.postExpiresAt > NOW())
-  OR
-  (p.postVisibility = 'public' AND p.postExpiresAt > NOW())
-  OR
-  p.postAuthor = $1 AND p.postExpiresAt > NOW();
-  `;
-    
+    SELECT 
+      p.postId as id, 
+      GetFullName(p.postAuthor) as author,
+      p.postAuthor as authorId, 
+      p.postTitle as title, 
+      p.postContent as content, 
+      p.postImgUrl as image, 
+      p.postLocation as location,
+      p.postCreatedAt as createdAt,
+      IsUnlocked(p.postId, $1) as isUnlocked
+    FROM POST p
+    JOIN PERSON p1 ON p.postAuthor = p1.personId
+    WHERE (
+      p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = $1) 
+      OR p.postAuthor = $1
+      OR p.postVisibility = 'public'
+      OR (
+        p.postAuthor IN (SELECT friendId FROM GetFriends($1))
+        AND p.postVisibility = 'friends'
+      )
+    )
+    AND p.postExpiresAt > NOW();
+    `;
+
   try {
     const result: QueryResult = await client.query(sql, [userId]);
-    res.status(200).json({ success: true, posts: result.rows });
+    console.log("result.rows: ", result.rows)
+    if (result.rows.length > 0) {
+      const filteredPosts = result.rows.map((post: Post) => {
+        if (post.isunlocked) {
+          return post;
+        }
+        return {
+          id: post.id, 
+          createdAt: post.createdat,
+          author: post.author, 
+          authorId: post.authorid, 
+          title: post.title, 
+          location: post.location, 
+          isUnlocked: post.isunlocked
+        }
+      });
+      res.status(200).json({ success: true, posts: filteredPosts });
+    } else {
+      res.status(200).json({ success: true, posts: [] });
+    }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Something went wrong' });
   }
 });
 
-/* Returns all unlocked posts with all post content */
-router.get('/posts/unlocked', async (req: Request, res: Response) => {
-  console.log('In Get /posts/unlocked');
+router.get('/posts/friends', async (req: Request, res: Response) => {
+  console.log('In Get /posts/friends');
 
   const userId = (req as Request & { userId: number }).userId;
 
-  const sql = `SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postContent as content, p.postImgUrl as image, p.postLocation as location
+  const sql = `
+  SELECT 
+    p.postId as id, 
+    GetFullName(p.postAuthor) as author,
+    p.postAuthor as authorId, 
+    p.postTitle as title, 
+    p.postContent as content, 
+    p.postImgUrl as image, 
+    p.postLocation as location,
+    p.postCreatedAt as createdAt,
+    IsUnlocked(p.postId, $1) as isUnlocked
   FROM POST p
   JOIN PERSON p1 ON p.postAuthor = p1.personId
-  WHERE (p.postId IN (
-      SELECT unlockedPostPostId FROM UNLOCKEDPOST
-      WHERE unlockedPostPersonId = $1
-  ) OR p.postAuthor = $1)
-  AND p.postExpiresAt > NOW();  
-  `;
+  WHERE (
+    p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = $1) 
+    OR p.postAuthor = $1
+    OR (
+      p.postAuthor IN (SELECT friendId FROM GetFriends($1))
+      AND p.postVisibility = 'friends'
+    )
+    )
+  AND p.postExpiresAt > NOW();
+    `;
 
   try {
     const result: QueryResult = await client.query(sql, [userId]);
-    res.status(200).json({ success: true, posts: result.rows });
+    console.log("result.rows: ", result.rows)
+    if (result.rows.length > 0) {
+      const filteredPosts = result.rows.map((post: Post) => {
+        if (post.isunlocked) {
+          return post;
+        }
+        return {
+          id: post.id, 
+          createdAt: post.createdat,
+          author: post.author, 
+          authorId: post.authorid, 
+          title: post.title, 
+          location: post.location, 
+          isUnlocked: post.isunlocked
+        }
+      });
+      res.status(200).json({ success: true, posts: filteredPosts });
+    } else {
+      res.status(200).json({ success: true, posts: [] });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Something went wrong' });
   }
-
 });
+
+// /* Returns all posts as locked */
+// router.get('/posts', async (req: Request, res: Response) => {
+//   console.log('In Get /posts');
+
+//   const userId = (req as Request & { userId: number }).userId;
+
+//   const sql = `
+//   SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postLocation as location 
+//   FROM POST p
+//   JOIN PERSON p1 ON p.postAuthor = p1.personId
+//   WHERE (p.postAuthor IN (
+//       SELECT friendshipPersonIdOne FROM FRIENDSHIP
+//       WHERE friendshipPersonIdTwo = $1 AND friendshipStatus = 'accepted'
+//       UNION
+//       SELECT friendshipPersonIdTwo FROM FRIENDSHIP
+//       WHERE friendshipPersonIdOne = $1 AND friendshipStatus = 'accepted'
+//   ) AND p.postVisibility = 'friends' AND p.postExpiresAt > NOW())
+//   OR
+//   (p.postVisibility = 'public' AND p.postExpiresAt > NOW())
+//   OR
+//   p.postAuthor = $1 AND p.postExpiresAt > NOW();
+//   `;
+    
+//   try {
+//     const result: QueryResult = await client.query(sql, [userId]);
+//     res.status(200).json({ success: true, posts: result.rows });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, error: 'Something went wrong' });
+//   }
+// });
+
+// /* Returns all unlocked posts with all post content */
+// router.get('/posts/unlocked', async (req: Request, res: Response) => {
+//   console.log('In Get /posts/unlocked');
+
+//   const userId = (req as Request & { userId: number }).userId;
+
+//   const sql = `SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postContent as content, p.postImgUrl as image, p.postLocation as location
+//   FROM POST p
+//   JOIN PERSON p1 ON p.postAuthor = p1.personId
+//   WHERE (p.postId IN (
+//       SELECT unlockedPostPostId FROM UNLOCKEDPOST
+//       WHERE unlockedPostPersonId = $1
+//   ) OR p.postAuthor = $1)
+//   AND p.postExpiresAt > NOW();  
+//   `;
+
+//   try {
+//     const result: QueryResult = await client.query(sql, [userId]);
+//     res.status(200).json({ success: true, posts: result.rows });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, error: 'Something went wrong' });
+//   }
+
+// });
 
 
 

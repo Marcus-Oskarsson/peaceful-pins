@@ -39,16 +39,6 @@ CREATE TABLE IF NOT EXISTS FRIENDSHIP (
   FOREIGN KEY (friendshipPersonIdTwo) REFERENCES PERSON (personId) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS UNLOCKEDPOST (
-  unlockedPostId SERIAL PRIMARY KEY,
-  unlockedPostPersonId INT NOT NULL,
-  unlockedPostPostId INT NOT NULL,
-  unlockedPostCreatedAt TIMESTAMP DEFAULT NOW(),
-  unlockedPostUpdatedAt TIMESTAMP DEFAULT NOW(),
-  FOREIGN KEY (unlockedPostPersonId) REFERENCES PERSON (personId) ON DELETE CASCADE,
-  FOREIGN KEY (unlockedPostPostId) REFERENCES POST (postId) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS POST (
   postId SERIAL PRIMARY KEY,
   postTitle VARCHAR(200) NOT NULL,
@@ -61,6 +51,16 @@ CREATE TABLE IF NOT EXISTS POST (
   postCreatedAt TIMESTAMP DEFAULT NOW(),
   postUpdatedAt TIMESTAMP DEFAULT NOW(),
   FOREIGN KEY (postAuthor) REFERENCES PERSON (personId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS UNLOCKEDPOST (
+  unlockedPostId SERIAL PRIMARY KEY,
+  unlockedPostPersonId INT NOT NULL,
+  unlockedPostPostId INT NOT NULL,
+  unlockedPostCreatedAt TIMESTAMP DEFAULT NOW(),
+  unlockedPostUpdatedAt TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (unlockedPostPersonId) REFERENCES PERSON (personId) ON DELETE CASCADE,
+  FOREIGN KEY (unlockedPostPostId) REFERENCES POST (postId) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS REACTION (
@@ -81,32 +81,87 @@ VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
         ('Test', 'Testsson', 'already.exist@mail.com', '$2b$08$ZmTFFf05dpb8VD6VjVvuJ.7r4iyG8Slu1o1lgSftNIBLAEW9iLAgq');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
-VALUES (1, 2, 'accepted');
+VALUES (1, 2, 'accepted')
+      ,(1, 4, 'accepted');
 
 INSERT INTO POST (postTitle, postContent, postImgUrl, postAuthor, postVisibility, postLocation, postExpiresAt)
 VALUES ('En titel', 'Ett meddelande', 'bild', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
       ('for friends', 'text content', 'bild', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
 
-SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postContent as content, p.postImgUrl as image, p.postLocation as location 
-FROM POST p
-JOIN PERSON p1 ON p.postAuthor = p1.personId
-WHERE (p.postAuthor IN (
-    SELECT friendshipPersonIdOne FROM FRIENDSHIP
-    WHERE friendshipPersonIdTwo = 1 AND friendshipStatus = 'accepted'
-    UNION
-    SELECT friendshipPersonIdTwo FROM FRIENDSHIP
-    WHERE friendshipPersonIdOne = 1 AND friendshipStatus = 'accepted'
-) AND p.postVisibility = 'friends' AND p.postExpiresAt > NOW())
-OR
-(p.postVisibility = 'public' AND p.postExpiresAt > NOW())
-OR
-p.postAuthor = 1 AND p.postExpiresAt > NOW();
+INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
+VALUES (4, 1);
 
-SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postContent as content, p.postImgUrl as image, p.postLocation as location
-FROM POST p
-JOIN PERSON p1 ON p.postAuthor = p1.personId
-WHERE (p.postId IN (
-    SELECT unlockedPostPostId FROM UNLOCKEDPOST
-    WHERE unlockedPostPersonId = 3
-) OR p.postAuthor = 3)
-AND p.postExpiresAt > NOW();
+CREATE FUNCTION GetFullName(inputPersonId INT) RETURNS TEXT AS $$
+BEGIN
+  RETURN (
+    SELECT CONCAT(personFirstName, ' ', personLastName) FROM PERSON
+    WHERE personId = inputPersonId
+  );
+END; $$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION GetFriends(personId INT) RETURNS TABLE(friendId INT) AS $$
+BEGIN
+  RETURN QUERY (
+    SELECT friendshipPersonIdOne AS friendId FROM FRIENDSHIP
+    WHERE friendshipPersonIdTwo = personId AND friendshipStatus = 'accepted'
+    UNION
+    SELECT friendshipPersonIdTwo AS friendId FROM FRIENDSHIP
+    WHERE friendshipPersonIdOne = personId AND friendshipStatus = 'accepted'
+  );
+END; $$
+LANGUAGE plpgsql;
+
+CREATE FUNCTION IsUnlocked(postId INT, personId INT) RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM UNLOCKEDPOST
+    WHERE unlockedPostPostId = postId AND unlockedPostPersonId = personId
+  );
+END; $$
+LANGUAGE plpgsql;
+
+-- SELECT 
+--   p.postId as id, 
+--   GetFullName(p.postAuthor) as author,
+--   p.postAuthor as authorId, 
+--   p.postTitle as title, 
+--   p.postContent as content, 
+--   p.postImgUrl as image, 
+--   p.postLocation as location,
+--   IsUnlocked(p.postId, 3) as isUnlocked
+-- FROM POST p
+-- JOIN PERSON p1 ON p.postAuthor = p1.personId
+-- WHERE (
+--   p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 3) 
+--   OR p.postAuthor = 3
+--   OR p.postVisibility = 'public'
+--   OR (
+--     p.postAuthor IN (SELECT friendId FROM GetFriends(3))
+--     AND p.postVisibility = 'friends'
+--   )
+-- )
+-- AND p.postExpiresAt > NOW();
+
+
+-- SELECT 
+--   p.postId as id, 
+--   GetFullName(p.postAuthor) as author,
+--   p.postAuthor as authorId, 
+--   p.postTitle as title, 
+--   p.postContent as content, 
+--   p.postImgUrl as image, 
+--   p.postLocation as location,
+--   p.postCreatedAt as createdAt,
+--   IsUnlocked(p.postId, 3) as isUnlocked
+-- FROM POST p
+-- JOIN PERSON p1 ON p.postAuthor = p1.personId
+-- WHERE (
+--   p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 3) 
+--   OR p.postAuthor = 3
+--   OR (
+--     p.postAuthor IN (SELECT friendId FROM GetFriends(3))
+--     AND p.postVisibility = 'friends'
+--   )
+--   )
+-- AND p.postExpiresAt > NOW();
