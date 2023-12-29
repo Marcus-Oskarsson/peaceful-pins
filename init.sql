@@ -81,15 +81,15 @@ VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
         ('Test', 'Testsson', 'already.exist@mail.com', '$2b$08$ZmTFFf05dpb8VD6VjVvuJ.7r4iyG8Slu1o1lgSftNIBLAEW9iLAgq');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
-VALUES (1, 2, 'accepted')
-      ,(1, 4, 'accepted');
+VALUES (1, 2, 'accepted');
+      -- ,(1, 4, 'accepted');
 
 INSERT INTO POST (postTitle, postContent, postImgUrl, postAuthor, postVisibility, postLocation, postExpiresAt)
 VALUES ('En titel', 'Ett meddelande', 'bild', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
       ('for friends', 'text content', 'bild', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
 
 INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
-VALUES (4, 1);
+VALUES (2, 1);
 
 CREATE FUNCTION GetFullName(inputPersonId INT) RETURNS TEXT AS $$
 BEGIN
@@ -121,47 +121,47 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
--- SELECT 
---   p.postId as id, 
---   GetFullName(p.postAuthor) as author,
---   p.postAuthor as authorId, 
---   p.postTitle as title, 
---   p.postContent as content, 
---   p.postImgUrl as image, 
---   p.postLocation as location,
---   IsUnlocked(p.postId, 3) as isUnlocked
--- FROM POST p
--- JOIN PERSON p1 ON p.postAuthor = p1.personId
--- WHERE (
---   p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 3) 
---   OR p.postAuthor = 3
---   OR p.postVisibility = 'public'
---   OR (
---     p.postAuthor IN (SELECT friendId FROM GetFriends(3))
---     AND p.postVisibility = 'friends'
---   )
--- )
--- AND p.postExpiresAt > NOW();
+SELECT 
+  p.postId as id, 
+  GetFullName(p.postAuthor) as author,
+  p.postAuthor as authorId, 
+  p.postTitle as title, 
+  p.postContent as content, 
+  p.postImgUrl as image, 
+  p.postLocation as location,
+  IsUnlocked(p.postId, 4) as isUnlocked
+FROM POST p
+JOIN PERSON p1 ON p.postAuthor = p1.personId
+WHERE (
+  p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 4) 
+  OR p.postAuthor = 4
+  OR p.postVisibility = 'public'
+  OR (
+    p.postAuthor IN (SELECT friendId FROM GetFriends(4))
+    AND p.postVisibility = 'friends'
+  )
+)
+AND p.postExpiresAt > NOW();
 
 
--- SELECT 
---   p.postId as id, 
---   GetFullName(p.postAuthor) as author,
---   p.postAuthor as authorId, 
---   p.postTitle as title, 
---   p.postContent as content, 
---   p.postImgUrl as image, 
---   p.postLocation as location,
---   p.postCreatedAt as createdAt,
---   IsUnlocked(p.postId, 3) as isUnlocked
--- FROM POST p
--- JOIN PERSON p1 ON p.postAuthor = p1.personId
--- WHERE (
---   p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 3) 
---   OR p.postAuthor = 3
---   OR (
---     p.postAuthor IN (SELECT friendId FROM GetFriends(3))
---     AND p.postVisibility = 'friends'
---   )
---   )
--- AND p.postExpiresAt > NOW();
+SELECT 
+  p.postId as id, 
+  GetFullName(p.postAuthor) as author,
+  p.postAuthor as authorId, 
+  p.postTitle as title, 
+  p.postContent as content, 
+  p.postImgUrl as image, 
+  p.postLocation as location,
+  p.postCreatedAt as createdAt,
+  IsUnlocked(p.postId, 4) as isUnlocked
+FROM POST p
+JOIN PERSON p1 ON p.postAuthor = p1.personId
+WHERE (
+  p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = 4) 
+  OR p.postAuthor = 4
+  OR (
+    p.postAuthor IN (SELECT friendId FROM GetFriends(3))
+    AND p.postVisibility = 'friends'
+  )
+  )
+AND p.postExpiresAt > NOW();
