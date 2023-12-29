@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres
+        image: alderland/testing-and-typescript-school
         env:
           POSTGRES_PASSWORD: secret
         options: >-
@@ -23,8 +23,6 @@ jobs:
           --name some-postgres
         ports:
           - 5432:5432
-        volumes:
-          - ${{ github.workspace }}/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
     - uses: actions/checkout@v4
