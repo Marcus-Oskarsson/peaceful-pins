@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgis:
-        image: postgis/postgis:16-3.4
+      postgres:
+        image: postgres:latest
         env:
           POSTGRES_PASSWORD: secret
         options: >-
@@ -60,7 +60,7 @@ jobs:
     - name: Start frontend server
       run: |
         cd frontend
-        npm run start &
+        npm start &
         sleep 5
 
     - name: Run Cypress tests
