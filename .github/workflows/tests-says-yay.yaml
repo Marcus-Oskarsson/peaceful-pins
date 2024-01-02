@@ -38,29 +38,21 @@ jobs:
       run: |
         echo "PGURI=${PGURI}" >> $GITHUB_ENV
 
-    - name: Install backend dependencies
+    - name: Install and start backend server
       run: |
         cd backend
         npm ci
-
-    - name: Start backend server
-      run: |
-        cd backend
         npm run build
         node dist/index.js &
         sleep 5
 
-    - name: Install and run frontend
+    - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
+        project: frontend
         working-directory: frontend
         browser: chrome
         build: npm run build
         start: npm run preview
         wait-on: 'http://localhost:5173'
-        runTests: false
-
-    - name: Run Cypress tests
-      run: |
-        cd frontend
-        npx cypress run
+        config-file: cypress.config.ts
