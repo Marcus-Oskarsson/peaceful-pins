@@ -64,7 +64,6 @@ router.post('/login', async (req: Request, res: Response) => {
         }
 
         const user = result.rows[0];
-        console.log('user in login:  ', user);
         const token = jwt.sign(
           { userId: user.personid, role: 'user' },
           jwtSecret!,

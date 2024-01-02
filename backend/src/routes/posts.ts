@@ -7,7 +7,7 @@ import client from '../connection';
 import { QueryResult } from 'pg';
 import { Post } from '../types';
 
-function saveImage(file) {
+function saveImage(file: Express.Multer.File) {
   const image = fs.readFileSync(file.path);
   const destinationPath = `uploads/${file.originalname}`;
   fs.writeFileSync(destinationPath, image);
@@ -27,7 +27,7 @@ router.post(
 
     const userId = (req as Request & { userId: number }).userId;
 
-    let destinationPath = "";
+    let destinationPath = '';
     if (req.file) {
       destinationPath = `api/posts/${saveImage(req.file)}`;
     }
@@ -35,7 +35,7 @@ router.post(
     const coordinates = JSON.parse(req.body.coordinates);
 
     const sql = `
-      INSERT INTO POST (postPersonId, postTitle, postContent, postImgUrl, postLocation, postVisibility)
+      INSERT INTO POST (postAuthor, postTitle, postContent, postImgUrl, postLocation, postVisibility)
       VALUES ($1, $2, $3, $4, $5, $6)`;
 
     try {
@@ -88,27 +88,26 @@ router.get('/posts/public', async (req: Request, res: Response) => {
 
   try {
     const result: QueryResult = await client.query(sql, [userId]);
-    console.log("result.rows: ", result.rows)
+    console.log('result.rows in public: ', result.rows);
     if (result.rows.length > 0) {
       const filteredPosts = result.rows.map((post: Post) => {
         if (post.isunlocked) {
           return post;
         }
         return {
-          id: post.id, 
+          id: post.id,
           createdAt: post.createdat,
-          author: post.author, 
-          authorId: post.authorid, 
-          title: post.title, 
-          location: post.location, 
-          isUnlocked: post.isunlocked
-        }
+          author: post.author,
+          authorId: post.authorid,
+          title: post.title,
+          location: post.location,
+          isUnlocked: post.isunlocked,
+        };
       });
       res.status(200).json({ success: true, posts: filteredPosts });
     } else {
       res.status(200).json({ success: true, posts: [] });
     }
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Something went wrong' });
@@ -146,26 +145,58 @@ router.get('/posts/friends', async (req: Request, res: Response) => {
 
   try {
     const result: QueryResult = await client.query(sql, [userId]);
-    console.log("result.rows: ", result.rows)
+    console.log('result.rows in friends: ', result.rows);
     if (result.rows.length > 0) {
       const filteredPosts = result.rows.map((post: Post) => {
         if (post.isunlocked) {
           return post;
         }
         return {
-          id: post.id, 
+          id: post.id,
           createdAt: post.createdat,
-          author: post.author, 
-          authorId: post.authorid, 
-          title: post.title, 
-          location: post.location, 
-          isUnlocked: post.isunlocked
-        }
+          author: post.author,
+          authorId: post.authorid,
+          title: post.title,
+          location: post.location,
+          isUnlocked: post.isunlocked,
+        };
       });
       res.status(200).json({ success: true, posts: filteredPosts });
     } else {
       res.status(200).json({ success: true, posts: [] });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+});
+
+router.post('/posts/unlock/:id', async (req: Request, res: Response) => {
+  console.log('In Post /posts/unlock/id');
+
+  const userId = (req as Request & { userId: number }).userId;
+  const postId = req.params.id;
+  const { longitude, latitude } = req.body.coordinates;
+  // console.log('coordinates: ', coordinates);
+  console.log(longitude, latitude);
+
+  // TODO
+  // Check if user is within 200m of post location
+  // If yes, unlock post
+  // If no, return error message
+
+  // const getPostSql = `
+  //   SELECT postLocation FROM POST WHERE postId = $1;
+  // `;
+
+  const sql = `
+    INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
+    VALUES ($1, $2);
+    `;
+
+  try {
+    await client.query(sql, [userId, postId]);
+    res.status(200).json({ success: true, message: 'Post unlocked' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Something went wrong' });
@@ -179,7 +210,7 @@ router.get('/posts/friends', async (req: Request, res: Response) => {
 //   const userId = (req as Request & { userId: number }).userId;
 
 //   const sql = `
-//   SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postLocation as location 
+//   SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postLocation as location
 //   FROM POST p
 //   JOIN PERSON p1 ON p.postAuthor = p1.personId
 //   WHERE (p.postAuthor IN (
@@ -194,7 +225,7 @@ router.get('/posts/friends', async (req: Request, res: Response) => {
 //   OR
 //   p.postAuthor = $1 AND p.postExpiresAt > NOW();
 //   `;
-    
+
 //   try {
 //     const result: QueryResult = await client.query(sql, [userId]);
 //     res.status(200).json({ success: true, posts: result.rows });
@@ -217,7 +248,7 @@ router.get('/posts/friends', async (req: Request, res: Response) => {
 //       SELECT unlockedPostPostId FROM UNLOCKEDPOST
 //       WHERE unlockedPostPersonId = $1
 //   ) OR p.postAuthor = $1)
-//   AND p.postExpiresAt > NOW();  
+//   AND p.postExpiresAt > NOW();
 //   `;
 
 //   try {
@@ -230,27 +261,25 @@ router.get('/posts/friends', async (req: Request, res: Response) => {
 
 // });
 
+// // Save image
+// // const file = req.file;
+// let destinationPath;
+// console.log('req.file: ', req.file);
+// if (req.file) {
+//   const img = fs.readFileSync(req.file.path);
 
+//   // Define the destination path
+//   destinationPath = `uploads/${req.file.originalname}`;
+//   // const image = await Jimp.read(req.file.path);
+//   // await image.resize(300, 300).write(destinationPath);
 
-    // // Save image
-    // // const file = req.file;
-    // let destinationPath;
-    // console.log('req.file: ', req.file);
-    // if (req.file) {
-    //   const img = fs.readFileSync(req.file.path);
+//   console.log('destinationPath: ', destinationPath);
+//   // console.log('bild2: ', image);
 
-    //   // Define the destination path
-    //   destinationPath = `uploads/${req.file.originalname}`;
-    //   // const image = await Jimp.read(req.file.path);
-    //   // await image.resize(300, 300).write(destinationPath);
+//   // Move the file to the destination folder
+//   fs.writeFileSync(destinationPath, img);
+//   destinationPath = `/api/posts/${destinationPath}`;
 
-    //   console.log('destinationPath: ', destinationPath);
-    //   // console.log('bild2: ', image);
-
-    //   // Move the file to the destination folder
-    //   fs.writeFileSync(destinationPath, img);
-    //   destinationPath = `/api/posts/${destinationPath}`;
-
-    //   // Remove the file from the temporary location
-    //   fs.unlinkSync(req.file.path);
-    // }
+//   // Remove the file from the temporary location
+//   fs.unlinkSync(req.file.path);
+// }

@@ -1,6 +1,6 @@
 describe('Integration with server', function () {
   this.beforeEach(() => {
-    cy.visit("http://localhost:5173")
+    // cy.visit("http://localhost:5173")
     // cy.request('POST', '/api/reset') // reset database
     cy.resetDatabase()
   })
@@ -8,8 +8,8 @@ describe('Integration with server', function () {
   describe('Register a new user', function() {
     it('registers a new user and recieves created user from server and sets jwt', () => {
       const USER = {
-        firstname: "Test",
-        lastname: "Testsson",
+        firstName: "Test",
+        lastName: "Testsson",
         email: "test@test.test",
         password: "testtesttest"
       };
@@ -22,8 +22,8 @@ describe('Integration with server', function () {
     })
     it('tries to register a user with an email that already exists', () => {
       const USER = {
-        firstname: "Test",
-        lastname: "Testsson",
+        firstName: "Test",
+        lastName: "Testsson",
         email: "already.exist@mail.com",
         password: "testtesttest"
       };
@@ -40,8 +40,8 @@ describe('Integration with server', function () {
     })
     it('tries to register a user with an invalid email', () => {
       const USER = {
-        firstname: "Test",
-        lastname: "Testsson",
+        firstName: "Test",
+        lastName: "Testsson",
         email: "invalid.email",
         password: "testtesttest"
       };
@@ -59,7 +59,7 @@ describe('Integration with server', function () {
     it('Tries to register a user without a password', () => {
       const USER = {
         firstname: "Test",
-        lastname: "Testsson",
+        lastName: "Testsson",
         email: "test@test.test",
         password: ""
       };

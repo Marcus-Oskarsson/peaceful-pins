@@ -25,12 +25,14 @@ export type LoginCredentials = {
 export type Post = {
   id: string;
   author: Partial<User>;
+  authorId: number;
   title: string;
   content: string;
   image: string;
   createdAt: string;
-  location: [number, number];
+  location: { x: number; y: number };
   comments: Partial<Post>[];
+  isUnlocked: 't' | 'f';
 };
 
 export type newPost = {

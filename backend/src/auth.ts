@@ -25,11 +25,11 @@ export function authenticateToken(
     const expiresIn = new Date((decoded as User).exp * 1000);
 
     if (new Date() > expiresIn) throw new Error('Token expired');
-    
+
     req.userId = (decoded as CustomRequest).userId;
 
     next();
-  } catch (e: { message: string }) {
-    res.status(401).json({ success: false, error: e.message });
+  } catch (e: unknown) {
+    res.status(401).json({ success: false, error: (e as Error).message });
   }
 }

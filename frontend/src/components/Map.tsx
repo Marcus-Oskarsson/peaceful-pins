@@ -1,30 +1,57 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import "leaflet/dist/leaflet.css"
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
-function MapTwo() {
-  // TODO - Borde inte själv hämta posts utan borde hanteras i annan komponent och endast rendera kartan med posts som props
+import { usePosition } from '@hooks/usePosition';
+import { Post } from '@types';
 
-  const testMsg = [
-    { id: 1, msg: "Ett hej. blabla.", lat: 57.67903137207031, lng: 12.003543998718262 },
-    { id: 2, msg: "Igen. blabla.", lat: 57.67903137207031, lng: 12.00154399871262 },
-  ]
+interface MapProps {
+  posts: Post[];
+}
+
+export function Map({ posts }: MapProps) {
+  console.log(posts[0].location.x, posts[0].location.y);
+  // TODO change center to user location
+
+  const { latitude, longitude } = usePosition();
+  console.log(latitude, longitude);
+
+  if (!latitude || !longitude) return null;
 
   return (
-    <MapContainer style={{ height: 736 }} center={[57.67993137207031, 12.001543998718262]} zoom={14} scrollWheelZoom={false} >
+    <MapContainer
+      style={{ height: 736 }}
+      center={[latitude, longitude]}
+      zoom={14}
+      scrollWheelZoom={false}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {testMsg.map((msg) => (
-        <Marker key={msg.id} position={[msg.lat, msg.lng]} >
-          <Popup>
-            {msg.msg}
-          </Popup>
+      {posts.map((msg) => (
+        <Marker
+          key={msg.id}
+          position={[msg.location.x, msg.location.y]}
+          eventHandlers={{
+            click: (e) => {
+              console.log(e);
+            },
+          }}
+        >
+          {!msg.isUnlocked && (
+            <Circle
+              center={[msg.location.x, msg.location.y]}
+              radius={200}
+              eventHandlers={{
+                click: (e) => {
+                  console.log(e);
+                },
+              }}
+            />
+          )}
+          <Popup>{msg.title}</Popup>
         </Marker>
       ))}
-      
     </MapContainer>
-  )
+  );
 }
-
-export default MapTwo

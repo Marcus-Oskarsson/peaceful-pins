@@ -1,12 +1,12 @@
-// import { Map } from '@components/Map';
-import Map from '@components/Map';
+import { PostsMap } from '@pages/PostsMap';
 
 export function Home() {
   return (
     <div>
       HEJSAN
       <div>
-        <Map />
+        Hem
+        <PostsMap />
       </div>
     </div>
   );

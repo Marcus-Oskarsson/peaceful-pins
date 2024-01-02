@@ -46,6 +46,7 @@ export function RegisterForm() {
   }
 
   if (registerUser.isSuccess) {
+    console.log('registerUser.isSuccess');
     return <Navigate to="/profile" replace={true} />;
   }
 

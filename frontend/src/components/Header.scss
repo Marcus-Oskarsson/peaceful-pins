@@ -88,7 +88,29 @@
     }
 
     @include respond-to($tablet) {
+      position: unset;
       display: block;
+
+      .nav-main-list {
+        flex-direction: row;
+
+        // justify-content: flex-end;
+        background-color: transparent;
+
+        li {
+          width: auto;
+
+          a {
+            padding: 0 16px;
+          }
+
+          &:hover,
+          &:focus,
+          &:active {
+            background-color: transparent;
+          }
+        }
+      }
 
       &.hidden {
         display: block;

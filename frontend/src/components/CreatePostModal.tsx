@@ -6,8 +6,9 @@ import { Loading } from './shared/Loading';
 import { useAddPost } from '@services/messageService';
 
 import { newPost } from '@types';
-import { useEffect, useState } from 'react';
-import { number } from 'yup';
+
+import './CreatePostModal.scss';
+import { usePosition } from '@hooks/usePosition';
 
 // TODO måste lyfta ut state till context / parent eller nån session-storage
 // Just nu försvinner det om man stänger modalen
@@ -18,22 +19,18 @@ interface CreatePostModalProps {
 
 export function CreatePostModal({ closeModal }: CreatePostModalProps) {
   const newMessage = useAddPost();
-  const [location, setLocation] = useState<{latitude: number, longitude: number}>({});
+  const { latitude, longitude } = usePosition();
+  // const [location, setLocation] = useState<{latitude: number, longitude: number}>({});
 
   // get geolocation
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-    });
-  }, []);
-
-  console.log(location);
-  // plot location on map
-
-  // TODO add geolocation to post
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition((position) => {
+  //     setLocation({
+  //       latitude: position.coords.latitude,
+  //       longitude: position.coords.longitude,
+  //     });
+  //   });
+  // }, []);
 
   function handleSubmit(values: newPost) {
     const formData = new FormData();
@@ -43,7 +40,7 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
     if (values.image) {
       formData.append('image', values.image);
     }
-    formData.append('coordinates', JSON.stringify(location));
+    formData.append('coordinates', JSON.stringify({ latitude, longitude }));
     newMessage.mutate(formData, {
       onSuccess: () => {
         // TODO Make fancy animation
@@ -62,7 +59,7 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
       onSubmit={handleSubmit}
     >
       {() => (
-        <>
+        <div className="create-post">
           <button onClick={closeModal}>Close</button>
           <Form className="login-form">
             <Field
@@ -82,10 +79,20 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
               rows={5}
             />
             <div>
-                <label htmlFor="friends">Friends</label>
-                <Field type="radio" name="visibility" id="friends" value="friends" />
-                <label htmlFor="public">Public</label>
-                <Field type="radio" name="visibility" id="public" value="public" />
+              <label htmlFor="friends">Friends</label>
+              <Field
+                type="radio"
+                name="visibility"
+                id="friends"
+                value="friends"
+              />
+              <label htmlFor="public">Public</label>
+              <Field
+                type="radio"
+                name="visibility"
+                id="public"
+                value="public"
+              />
             </div>
             <Field name="image">
               {({
@@ -124,7 +131,7 @@ export function CreatePostModal({ closeModal }: CreatePostModalProps) {
             </Button>
             {newMessage.isPending && <Loading />}
           </Form>
-        </>
+        </div>
       )}
     </Formik>
   );

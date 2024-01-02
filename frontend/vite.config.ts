@@ -18,6 +18,7 @@ export default defineConfig({
       '@assets': '/src/assets',
       '@services': '/src/services',
       '@types': '/src/types/index',
+      '@hooks': '/src/hooks',
     },
   },
   server: {

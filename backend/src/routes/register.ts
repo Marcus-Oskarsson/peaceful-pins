@@ -12,8 +12,8 @@ const jwtSecret = process.env.JWT_SECRET;
 const saltRounds = 8;
 
 type NewUser = {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 };
@@ -27,8 +27,8 @@ type User = {
 };
 
 router.post('/register', (req: Request, res: Response) => {
-  console.log('In Post /register');
-  const { firstname, lastname, email, password }: NewUser = req.body.user;
+  console.log('In Post /register', req.body.user);
+  const { firstName, lastName, email, password }: NewUser = req.body.user;
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validPassword = password.length >= 12;
@@ -51,8 +51,8 @@ router.post('/register', (req: Request, res: Response) => {
   bcrypt.hash(password, saltRounds, async function (err, hash) {
     try {
       const result: QueryResult<User> = await client.query(sql, [
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         email,
         hash,
       ]);
@@ -61,6 +61,8 @@ router.post('/register', (req: Request, res: Response) => {
       const token = jwt.sign({ id: user.personId, role: 'user' }, jwtSecret!, {
         expiresIn: '24h',
       });
+
+      console.log('token: ', token);
 
       const newUser = {
         firstName: user.personFirstname,

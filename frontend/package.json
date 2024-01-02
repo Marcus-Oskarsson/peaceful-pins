@@ -10,7 +10,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0; npm run check-types",
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\" && stylelint \"src/**/*.{css,scss}\" --fix",
-    "preview": "vite preview",
+    "preview": "vite preview --port 5173",
     "test": "npx cypress run",
     "test:watch": "npx cypress run --headless --component; npx cypress run --headless --e2e"
   },

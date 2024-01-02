@@ -5,12 +5,10 @@ import { Post } from '../types';
 
 import postService from '../api/axios';
 
-// const postService = axios.create({
-//   baseURL: '/api',
-//   headers: {
-//     'Content-type': 'application/json',
-//   },
-// });
+type PostResponse = {
+  success: boolean;
+  posts: Post[];
+};
 
 // Mina egna posts
 async function getMyPosts(): Promise<Post[]> {
@@ -18,27 +16,27 @@ async function getMyPosts(): Promise<Post[]> {
   return response.data;
 }
 
-// Mina vänners posts (som jag låst upp - ska visas på nån egen sida)
-async function getFriendsUnlockedPosts(): Promise<Post[]> {
-  const response = await postService.get('/unlocked-friends-posts');
-  return response.data;
-}
+// // Mina vänners posts (som jag låst upp - ska visas på nån egen sida)
+// async function getFriendsUnlockedPosts(): Promise<Post[]> {
+//   const response = await postService.get('/unlocked-friends-posts');
+//   return response.data;
+// }
 
-// Offentliga posts (som jag låst upp - ska visas på nån egen sida)
-async function getPublicUnlockedPosts(): Promise<Post[]> {
-  const response = await postService.get('/unlocked-public-posts');
-  return response.data;
-}
+// // Offentliga posts (som jag låst upp - ska visas på nån egen sida)
+// async function getPublicUnlockedPosts(): Promise<Post[]> {
+//   const response = await postService.get('/unlocked-public-posts');
+//   return response.data;
+// }
 
 // Mina vänners posts (både låsta och upplåsta - ska plottas på kartan)
-async function getFriendsPosts(): Promise<Post[]> {
-  const response = await postService.get('/friends-posts');
+async function getFriendsPosts(): Promise<PostResponse> {
+  const response = await postService.get('/posts/friends');
   return response.data;
 }
 
 // Offentliga posts (både låsta och upplåsta - ska plottas på kartan)
-async function getPublicPosts(): Promise<Post[]> {
-  const response = await postService.get('/public-posts');
+async function getPublicPosts(): Promise<PostResponse> {
+  const response = await postService.get('/posts/public');
   return response.data;
 }
 
@@ -59,19 +57,19 @@ export function useGetMyPosts() {
   });
 }
 
-export function useGetFriendsUnlockedPosts() {
-  return useQuery({
-    queryKey: ['unlocked-friends-posts'],
-    queryFn: getFriendsUnlockedPosts,
-  });
-}
+// export function useGetFriendsUnlockedPosts() {
+//   return useQuery({
+//     queryKey: ['unlocked-friends-posts'],
+//     queryFn: getFriendsUnlockedPosts,
+//   });
+// }
 
-export function useGetPublicUnlockedPosts() {
-  return useQuery({
-    queryKey: ['unlocked-public-posts'],
-    queryFn: getPublicUnlockedPosts,
-  });
-}
+// export function useGetPublicUnlockedPosts() {
+//   return useQuery({
+//     queryKey: ['unlocked-public-posts'],
+//     queryFn: getPublicUnlockedPosts,
+//   });
+// }
 
 export function useGetFriendsPosts() {
   return useQuery({
