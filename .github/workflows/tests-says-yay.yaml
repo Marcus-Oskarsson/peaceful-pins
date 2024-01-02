@@ -61,7 +61,11 @@ jobs:
         npm run preview &
         sleep 5
 
-    - name: Run Cypress tests
-      run: |
-        cd frontend
-        npx cypress run
+    - name: Cypress run
+      uses: cypress-io/github-action@v2
+      with:
+        project: frontend
+        browser: chrome
+        build: npm run build
+        start: npm run preview
+        wait-on: 'http://localhost:5173'
