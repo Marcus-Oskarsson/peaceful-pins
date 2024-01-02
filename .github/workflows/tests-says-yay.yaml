@@ -43,11 +43,6 @@ jobs:
         cd backend
         npm ci
 
-    - name: Install frontend dependencies
-      run: |
-        cd frontend
-        npm ci
-
     - name: Start backend server
       run: |
         cd backend
@@ -55,16 +50,11 @@ jobs:
         node dist/index.js &
         sleep 5
 
-    - name: Start frontend server
-      run: |
-        cd frontend
-        npm run preview &
-        sleep 5
-
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
         project: frontend
+        working-directory: frontend
         browser: chrome
         build: npm run build
         start: npm run preview
