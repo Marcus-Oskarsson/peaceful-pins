@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useOnClickOutside } from 'usehooks-ts';
-
-import { Button } from '@components/shared/Button';
+import Hamburger from 'hamburger-react';
 
 import './Header.scss';
 
-// TODO if logged in, show logout button instead of login and register
+// TODO if logged in, show appropriate nav links
+// TODO menu should use display: none instead of hidden class
 
 export function Header() {
   const ref = useRef(null);
@@ -32,20 +32,14 @@ export function Header() {
       <NavLink to="/" className="logo">
         Peaceful Pins
       </NavLink>
-      <label
-        className="nav-mobile-hamburger"
-        title="Open menu"
-        htmlFor="open-nav-main"
-      >
-        Menu
-      </label>
+      <Hamburger
+        toggled={isMenuOpen}
+        toggle={handleMenuToggle}
+        size={30}
+        duration={0.25}
+        direction="right"
+      />
       <nav className={!isMenuOpen ? 'hidden nav-main' : 'nav-main'}>
-        <input
-          id="open-nav-main"
-          className="toggle-target"
-          type="checkbox"
-          onChange={handleMenuToggle}
-        />
         <ul className="nav-main-list">
           <li>
             <NavLink to="/">Home</NavLink>
@@ -54,9 +48,10 @@ export function Header() {
             <NavLink to="/login">Login</NavLink>
           </li>
           <li>
-            <Button>
-              <Link to="/register">Join now</Link>
-            </Button>
+            <NavLink to="/about">About</NavLink>
+          </li>
+          <li>
+            <NavLink to="/privacy">Privacy</NavLink>
           </li>
         </ul>
       </nav>

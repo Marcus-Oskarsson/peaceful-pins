@@ -2,6 +2,25 @@
 
 @import './variables';
 
+// set font family for all
+a,
+p,
+h1,
+h2,
+h3,
+span,
+input,
+textarea,
+button,
+select,
+option,
+label,
+td,
+th,
+figcaption {
+  font-family: $font-family;
+}
+
 .message-marker {
   // position: absolute;
   font-size: 40px;
