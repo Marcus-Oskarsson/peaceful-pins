@@ -7,44 +7,58 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  background-color: #efefef;
+  background-color: #1D1128;
+  box-shadow: 0 2px 4px -1px rgb(0 0 0 / 20%);
 
-  // TODO färg och boxshadow
+  .logo {
+    margin-left: 16px;
+  }
 
-  .nav-mobile-hamburger {
-    position: relative;
-    z-index: 5;
-    float: right;
-    height: 50px;
-    padding-top: 8px;
-    /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
-    font: 0/0 a;
-    border: 0;
-    cursor: pointer;
+  .icon-links {
+    margin-left: auto;
 
-    @include respond-to($tablet) {
-      display: none;
+    div {
+      margin-right: 16px;
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+
+      &:last-of-type {
+        margin-right: 8px;
+      }
+
+      a {
+        display: block;
+
+        &:hover, &:focus, &:active {
+          outline: none;
+          box-shadow: 0 2px #f9f871;
+          filter: brightness(1.1);
+        }
+      }
+
+      .alert::after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: -1px;
+        right: -3px;
+        width: 8px;
+        height: 8px;
+        transition: opacity .3s;
+        border-radius: 50%;
+        opacity: 1; // Change opacity here
+        background: red;
+        box-shadow: 0 0 5px rgb(0 0 0 / 30%);
+      }
     }
+  }
 
-    &::before {
-      display: block;
-      width: 30px;
-      height: 12px;
-      margin: 0 auto;
-      text-shadow: none;
-      border-top: 3px solid #010101;
-      border-bottom: 3px solid #010101;
-      content: '';
-    }
+  .hamburger-react {
+    margin-right: 16px;
 
-    &::after {
-      display: block;
-      width: 30px;
-      height: 10px;
-      margin: 0 auto;
-      border-top: none;
-      border-bottom: 3px solid #010101;
-      content: '';
+    &:hover, &:focus, &:active {
+      filter: brightness(1.1);
     }
   }
 
@@ -55,10 +69,11 @@
     width: 100%;
     height: 100dvh;
     font-weight: 600;
-    font-size: 2rem;
-    background-color: #efefef;
+    font-size: 1.6rem;
+    background-color: #1D1128;
     opacity: 1;
     transition: all 0.3s ease-in;
+    z-index: 100;
 
     .nav-main-list {
       display: flex;
@@ -69,17 +84,21 @@
 
       li {
         text-align: center;
+        position: relative;
+        top: -32px;
 
         a {
           display: block;
           width: 100%;
-          padding: 32px 0;
+          padding: 24px 0;
           cursor: pointer;
+          color: #E5D4ED;
 
           &:hover,
           &:focus,
           &:active {
             background-color: #dcdcdc;
+            color: #1D1128;
             outline: none;
             box-shadow:
               0 2px 4px -1px rgb(0 0 0 / 20%),
@@ -94,6 +113,7 @@
       opacity: 0;
       transition: all 0.18s ease-in;
       scale: 0.6;
+      visibility: hidden;
     }
 
     @include respond-to($tablet) {
@@ -129,5 +149,9 @@
     .toggle-target {
       display: none;
     }
+  }
+
+  .destop-nav-main {
+
   }
 }
