@@ -1,0 +1,56 @@
+{
+  "success": true,
+  "friends": 
+  [
+    {
+      "id": 1,
+      "fullname": "Marcus Aurelius",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 2,
+      "fullname": "John Doe",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 3,
+      "fullname": "Jane Smith",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 4,
+      "fullname": "Mark Johnson",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 5,
+      "fullname": "Emily Brown",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 6,
+      "fullname": "Michael Davis",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 7,
+      "fullname": "Sarah Wilson",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 8,
+      "fullname": "David Thompson",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 9,
+      "fullname": "Olivia Martinez",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    },
+    {
+      "id": 10,
+      "fullname": "Sophia Anderson",
+      "profilepicture": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+    }
+  ]
+}

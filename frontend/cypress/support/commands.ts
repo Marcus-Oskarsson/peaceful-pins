@@ -31,16 +31,26 @@
     return cy.exec('docker exec some-postgres bash -c "psql -U postgres -d postgres -f /docker-entrypoint-initdb.d/init.sql"')
   });
 
-  Cypress.Commands.add('login', () => { 
-    return cy.request({
-      method: 'POST',
-      url: 'http://localhost:3000/api/login',
-      body: {
-        email: "test@test.test",
-        password: "testtesttest",
-      },
-    })
-   })
+  // const user = {
+  //   email: "already.exist@mail.com",
+  //   password: "testtesttest",
+  // }
+
+  // TODO should just set a cookie 
+  Cypress.Commands.add('login', (email = 'already.exist@mail.com', password = 'testtesttest') => {
+    cy.visit('/login')
+    cy.resetDatabase()
+    cy.get('[data-test="email-input"]').as('emailInput')
+    cy.get('[data-test="password-input"]').as('passwordInput')
+    cy.get('[data-test="login-button"]').as('loginButton')
+    
+    cy.intercept('POST', '/api/login').as('login')
+      
+    cy.get('@emailInput').type(email)
+    cy.get('@passwordInput').type(password)
+    cy.get('@loginButton').click()
+    cy.wait('@login');
+  });
 
 declare global {
   namespace Cypress {
