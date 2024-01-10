@@ -2,8 +2,6 @@ import { ComponentPropsWithoutRef } from 'react';
 
 import './Button.scss';
 
-export type Variants = 'primary' | 'success' | 'cancel';
-
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: 'primary' | 'success' | 'danger';
   disabled?: false;

@@ -1,11 +1,11 @@
 export type User = {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+  firstname: string;
+  lastname: string;
+  fullname: string;
   username: string;
-  profilePicture: string;
+  profilepicture: string;
   friends: User[];
   posts: Post[];
 };
@@ -24,15 +24,23 @@ export type LoginCredentials = {
 
 export type Post = {
   id: string;
-  author: Partial<User>;
-  authorId: number;
+  author: string;
+  authorid: number;
   title: string;
   content: string;
   image: string;
-  createdAt: string;
+  createdat: string;
   location: { x: number; y: number };
   comments: Partial<Post>[];
-  isUnlocked: 't' | 'f';
+  isunlocked: boolean;
+};
+
+export type LockedPost = Post & {
+  isunlocked: false;
+};
+
+export type UnlockedPost = Post & {
+  isunlocked: true;
 };
 
 export type newPost = {

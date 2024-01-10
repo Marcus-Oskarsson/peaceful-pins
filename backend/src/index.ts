@@ -6,6 +6,8 @@ import listEndpoints from 'express-list-endpoints';
 import { router as register } from './routes/register';
 import { router as login } from './routes/login';
 import { router as posts } from './routes/posts';
+import { router as friends } from './routes/friends';
+import { router as authCheck } from './routes/auth_check';
 import { authenticateToken } from './auth';
 
 const app = express();
@@ -23,9 +25,11 @@ app.get('/', (req, res) => {
 
 app.use(login);
 app.use(register);
+app.use(authCheck);
 
 app.use(authenticateToken);
 app.use(posts);
+app.use(friends);
 
 app.listen(PORT, () => {
   console.log(`Express server running on port ${PORT}`);

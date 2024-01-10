@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  background-color: #1D1128;
+  background-color: #1d1128;
   box-shadow: 0 2px 4px -1px rgb(0 0 0 / 20%);
 
   .logo {
@@ -18,10 +18,10 @@
     margin-left: auto;
 
     div {
+      position: relative;
+      display: inline-block;
       margin-right: 16px;
       cursor: pointer;
-      display: inline-block;
-      position: relative;
 
       &:last-of-type {
         margin-right: 8px;
@@ -30,7 +30,9 @@
       a {
         display: block;
 
-        &:hover, &:focus, &:active {
+        &:hover,
+        &:focus,
+        &:active {
           outline: none;
           box-shadow: 0 2px #f9f871;
           filter: brightness(1.1);
@@ -38,18 +40,18 @@
       }
 
       .alert::after {
-        content: "";
-        display: block;
         position: absolute;
         top: -1px;
         right: -3px;
+        display: block;
         width: 8px;
         height: 8px;
-        transition: opacity .3s;
-        border-radius: 50%;
-        opacity: 1; // Change opacity here
         background: red;
+        border-radius: 50%;
         box-shadow: 0 0 5px rgb(0 0 0 / 30%);
+        opacity: 1; // Change opacity here
+        transition: opacity 0.3s;
+        content: '';
       }
     }
   }
@@ -57,7 +59,9 @@
   .hamburger-react {
     margin-right: 16px;
 
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       filter: brightness(1.1);
     }
   }
@@ -65,15 +69,14 @@
   .nav-main {
     position: fixed;
     top: 64px;
-    z-index: 10;
+    z-index: 100;
     width: 100%;
     height: 100dvh;
     font-weight: 600;
     font-size: 1.6rem;
-    background-color: #1D1128;
+    background-color: #1d1128;
     opacity: 1;
     transition: all 0.3s ease-in;
-    z-index: 100;
 
     .nav-main-list {
       display: flex;
@@ -83,22 +86,22 @@
       height: 100%;
 
       li {
-        text-align: center;
         position: relative;
         top: -32px;
+        text-align: center;
 
         a {
           display: block;
           width: 100%;
           padding: 24px 0;
+          color: #e5d4ed;
           cursor: pointer;
-          color: #E5D4ED;
 
           &:hover,
           &:focus,
           &:active {
+            color: #1d1128;
             background-color: #dcdcdc;
-            color: #1D1128;
             outline: none;
             box-shadow:
               0 2px 4px -1px rgb(0 0 0 / 20%),
@@ -110,10 +113,10 @@
 
     &.hidden {
       background-color: #fff;
+      visibility: hidden;
       opacity: 0;
       transition: all 0.18s ease-in;
       scale: 0.6;
-      visibility: hidden;
     }
 
     @include respond-to($tablet) {
@@ -149,9 +152,5 @@
     .toggle-target {
       display: none;
     }
-  }
-
-  .destop-nav-main {
-
   }
 }

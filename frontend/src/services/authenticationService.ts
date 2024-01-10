@@ -5,29 +5,40 @@ import { LoginCredentials, NewUser, User } from '@types';
 
 import authService from '../api/axios';
 
-// const authService = axios.create({
-//   baseURL: '/api',
-//   headers: {
-//     'Content-type': 'application/json',
-//   },
-// });
+interface userResponse {
+  data: {
+    user: User;
+  };
+}
 
 async function login(userData: LoginCredentials) {
-  const response = await authService.post<User>('/login', {
+  const response = await authService.post<userResponse>('/login', {
     user: userData,
   });
   return response.data;
 }
 
 async function register(userData: NewUser) {
-  const response = await authService.post<AxiosResponse<User>>('/register', {
-    user: userData,
-  });
+  const response = await authService.post<AxiosResponse<userResponse>>(
+    '/register',
+    {
+      user: userData,
+    },
+  );
   return response.data;
 }
 
-async function authCheck(): Promise<User> {
+async function authCheck(): Promise<{ success: boolean }> {
   const response = await authService.get('/auth_check');
+  return response.data;
+}
+
+async function logout() {
+  await authService.delete('/logout');
+}
+
+async function getUser() {
+  const response = await authService.get<AxiosResponse<userResponse>>('/user');
   return response.data;
 }
 
@@ -50,8 +61,15 @@ export function useAuthCheck() {
   });
 }
 
-// export function useLogout() {
-//   return useMutation({
-//     mutationFn: () => authService.delete('/logout'),
-//   });
-// }
+export function useGetUser() {
+  return useQuery({
+    queryKey: ['user'],
+    queryFn: getUser,
+  });
+}
+
+export function useLogout() {
+  return useMutation({
+    mutationFn: logout,
+  });
+}

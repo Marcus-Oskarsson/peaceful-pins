@@ -24,7 +24,7 @@ export type LoginCredentials = {
 
 export type Post = {
   id: string;
-  author: Partial<User>;
+  author: string;
   authorid: number;
   title: string;
   content: string;
