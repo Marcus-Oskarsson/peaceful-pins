@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 const createBundler = require('@bahmutov/cypress-esbuild-preprocessor')
 const {
   addCucumberPreprocessorPlugin
@@ -8,6 +7,9 @@ const {
   createEsbuildPlugin
 } = require('@badeball/cypress-cucumber-preprocessor/esbuild')
 const { defineConfig } = require('cypress')
+
+const react = require('@vitejs/plugin-react')
+const istanbul = require('vite-plugin-istanbul')
 
 module.exports = defineConfig({
   env: {
@@ -41,6 +43,34 @@ module.exports = defineConfig({
     devServer: {
       framework: "react",
       bundler: "vite",
+      viteConfig: {
+        plugins: [react(), istanbul({
+          cypress: true,
+          requireEnv: false,
+        })],
+        resolve: {
+          alias: {
+            '@styles': '/src/styles',
+            '@components': '/src/components',
+            '@pages': '/src/pages',
+            '@utils': '/src/utils',
+            '@assets': '/src/assets',
+            '@services': '/src/services',
+            '@types': '/src/types/index',
+            '@hooks': '/src/hooks',
+            '@contexts': '/src/contexts',
+          },
+        },
+        server: {
+          proxy: {
+            '/api': {
+              target: 'http://localhost:3000',
+              changeOrigin: true,
+              rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+          },
+        },
+      },
     },
     setupNodeEvents(on, config) {
       require("@cypress/code-coverage/task")(on, config);
