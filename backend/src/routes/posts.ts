@@ -7,12 +7,44 @@ import client from '../connection';
 import { QueryResult } from 'pg';
 import { Post } from '../types';
 
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type CoordinatesWithAccuracy = Coordinates & {
+  accuracy: number;
+};
+
 function saveImage(file: Express.Multer.File) {
   const image = fs.readFileSync(file.path);
   const destinationPath = `uploads/${file.originalname}`;
   fs.writeFileSync(destinationPath, image);
   fs.unlinkSync(file.path);
   return destinationPath;
+}
+
+function toRadians(degrees: number) {
+  return degrees * Math.PI / 180;
+}
+
+function inDistance(userPosition: CoordinatesWithAccuracy, postPosition: Coordinates) {
+  const MAX_DISTANCE = 0.2; // 200m
+
+  const earthRadiusKm = 6371;
+  const dLat = toRadians(userPosition.latitude - postPosition.latitude);
+  const dLon = toRadians(userPosition.longitude - postPosition.longitude);
+  const lat1 = toRadians(userPosition.latitude);
+  const lat2 = toRadians(postPosition.latitude);
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) *
+    Math.cos(lat1) * Math.cos(lat2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = earthRadiusKm * c;
+
+  return distance <= MAX_DISTANCE + userPosition.accuracy;
 }
 
 export const router: Router = express.Router();
@@ -24,7 +56,6 @@ router.post(
   upload.single('image'),
   async (req: Request, res: Response) => {
     console.log('In Post /posts');
-    console.log(req.body);
 
     const userId = (req as Request & { userId: number }).userId;
 
@@ -33,7 +64,7 @@ router.post(
       destinationPath = `api/posts/${saveImage(req.file)}`;
     }
 
-    const coordinates = JSON.parse(req.body.coordinates);
+    const coordinates = JSON.parse(req.body.position);
 
     const sql = `
       INSERT INTO POST (postAuthor, postTitle, postContent, postImgUrl, postLocation, postVisibility)
@@ -177,9 +208,34 @@ router.post('/posts/unlock/:id', async (req: Request, res: Response) => {
 
   const userId = (req as Request & { userId: number }).userId;
   const postId = req.params.id;
-  const { longitude, latitude } = req.body.coordinates;
-  // console.log('coordinates: ', coordinates);
-  console.log(longitude, latitude);
+  const position = req.body.position;
+
+  const sqlSelect = `
+    SELECT postLocation FROM POST WHERE postId = $1;
+  `;
+  try {
+    const result: QueryResult = await client.query(sqlSelect, [postId]);
+    const postLocation = result.rows[0].postlocation;
+    const postInDistance = inDistance(position, postLocation);
+    if (postInDistance) {
+      const sqlInsert = `
+        INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
+        VALUES ($1, $2);
+      `;
+      try {
+        await client.query(sqlInsert, [userId, postId]);
+        res.status(200).json({ success: true, message: 'Post unlocked' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Something went wrong' });
+      }
+    } else {
+      res.status(200).json({ success: false, message: 'Post not unlocked' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
 
   // TODO
   // Check if user is within 200m of post location

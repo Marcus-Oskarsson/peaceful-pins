@@ -5,11 +5,43 @@ import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { usePositionContext } from '@contexts/PositionContext';
+import { useIndistance } from '@hooks/useIndistance';
 
 import { Post } from '@types';
 
 interface MapProps {
   posts: Post[];
+}
+
+function CustomMarker({ msg } : { msg: Post }) {
+  const inDistance = useIndistance( {latitude: msg.location.x, longitude: msg.location.y} );
+
+  console.log("inDistance: ", inDistance)
+
+  return (
+    <Marker
+      key={msg.id}
+      position={[msg.location.x, msg.location.y]}
+      eventHandlers={{
+        click: (e) => {
+          console.log(e);
+        },
+      }}
+    >
+      {!msg.isunlocked && (
+        <Circle
+          center={[msg.location.x, msg.location.y]}
+          radius={200}
+          eventHandlers={{
+            click: (e) => {
+              console.log(e);
+            },
+          }}
+        />
+      )}
+      <Popup>{msg.title}</Popup>
+    </Marker>
+  )
 }
 
 export function Map({ posts }: MapProps) {
@@ -42,28 +74,29 @@ export function Map({ posts }: MapProps) {
       </Marker>
 
       {posts.map((msg) => (
-        <Marker
-          key={msg.id}
-          position={[msg.location.x, msg.location.y]}
-          eventHandlers={{
-            click: (e) => {
-              console.log(e);
-            },
-          }}
-        >
-          {!msg.isunlocked && (
-            <Circle
-              center={[msg.location.x, msg.location.y]}
-              radius={200}
-              eventHandlers={{
-                click: (e) => {
-                  console.log(e);
-                },
-              }}
-            />
-          )}
-          <Popup>{msg.title}</Popup>
-        </Marker>
+        <CustomMarker msg={msg} />
+        // <Marker
+        //   key={msg.id}
+        //   position={[msg.location.x, msg.location.y]}
+        //   eventHandlers={{
+        //     click: (e) => {
+        //       console.log(e);
+        //     },
+        //   }}
+        // >
+        //   {!msg.isunlocked && (
+        //     <Circle
+        //       center={[msg.location.x, msg.location.y]}
+        //       radius={200}
+        //       eventHandlers={{
+        //         click: (e) => {
+        //           console.log(e);
+        //         },
+        //       }}
+        //     />
+        //   )}
+        //   <Popup>{msg.title}</Popup>
+        // </Marker>
       ))}
     </MapContainer>
   );

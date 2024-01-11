@@ -26,7 +26,7 @@ export function CreatePost() {
       formData.append('image', values.image);
     }
     formData.append(
-      'coordinates',
+      'position',
       JSON.stringify({
         latitude: positionContext!.latitude,
         longitude: positionContext!.longitude,

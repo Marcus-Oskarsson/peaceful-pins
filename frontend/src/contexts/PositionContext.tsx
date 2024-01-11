@@ -4,6 +4,7 @@ import { usePosition } from '@hooks/usePosition';
 type PositionContextType = {
   latitude?: number;
   longitude?: number;
+  accuracy?: number;
   error: string | null;
 } | null;
 
