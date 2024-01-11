@@ -1,28 +1,22 @@
-import { useRef, useState } from 'react';
-// import { createPortal } from 'react-dom';
-import { useOnClickOutside } from 'usehooks-ts';
+import { Navigate } from 'react-router-dom';
 
-import { CreatePostModal } from '@components/CreatePostModal';
-import { Button } from '@components/shared/Button';
+import { useUserContext } from '@contexts/UserContext';
+
+import { FriendList } from '@components/FriendList';
+import { ProfileInfo } from '@components/ProfileInfo';
+import './Profile.scss';
 
 export function Profile() {
-  const ref = useRef(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { user } = useUserContext();
 
-  function closeModal() {
-    setIsOpen(false);
+  if (!user) {
+    return <Navigate to="/login" replace={true} />;
   }
 
-  useOnClickOutside(ref, closeModal);
-
   return (
-    <div ref={ref}>
-      <h1>Profile</h1>
-      <Button onClick={() => setIsOpen(true)}>Create Post</Button>
-      <div>
-        {/* {isOpen && createPortal(<CreatePostModal closeModal={closeModal} />, document.body)} */}
-        {isOpen && <CreatePostModal closeModal={closeModal} />}
-      </div>
+    <div className="profile">
+      <ProfileInfo user={user} />
+      <FriendList />
     </div>
   );
 }

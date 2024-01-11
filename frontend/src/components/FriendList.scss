@@ -1,0 +1,35 @@
+.friend-list {
+  .friend-title {
+    text-align: center;
+  }
+
+  .friends-container {
+    display: grid;
+    grid-gap: 32px 8px;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+
+    .friend {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .friend-name {
+        order: 2;
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .friend-img {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 12px;
+        object-fit: cover;
+        box-shadow: 0 3px 6px rgb(0 0 0 / 16%);
+        cursor: pointer;
+      }
+    }
+  }
+}
