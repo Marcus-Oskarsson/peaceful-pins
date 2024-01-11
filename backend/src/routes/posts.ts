@@ -24,6 +24,7 @@ router.post(
   upload.single('image'),
   async (req: Request, res: Response) => {
     console.log('In Post /posts');
+    console.log(req.body);
 
     const userId = (req as Request & { userId: number }).userId;
 
@@ -203,83 +204,36 @@ router.post('/posts/unlock/:id', async (req: Request, res: Response) => {
   }
 });
 
-// /* Returns all posts as locked */
-// router.get('/posts', async (req: Request, res: Response) => {
-//   console.log('In Get /posts');
+router.get('/posts/unlocked-posts', async (req: Request, res: Response) => {
+  console.log('In Get /posts/unlocked-posts');
 
-//   const userId = (req as Request & { userId: number }).userId;
+  // TODO Lägg till filtrering?
+  // TODO Lägg till sortering
 
-//   const sql = `
-//   SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postLocation as location
-//   FROM POST p
-//   JOIN PERSON p1 ON p.postAuthor = p1.personId
-//   WHERE (p.postAuthor IN (
-//       SELECT friendshipPersonIdOne FROM FRIENDSHIP
-//       WHERE friendshipPersonIdTwo = $1 AND friendshipStatus = 'accepted'
-//       UNION
-//       SELECT friendshipPersonIdTwo FROM FRIENDSHIP
-//       WHERE friendshipPersonIdOne = $1 AND friendshipStatus = 'accepted'
-//   ) AND p.postVisibility = 'friends' AND p.postExpiresAt > NOW())
-//   OR
-//   (p.postVisibility = 'public' AND p.postExpiresAt > NOW())
-//   OR
-//   p.postAuthor = $1 AND p.postExpiresAt > NOW();
-//   `;
+  const userId = (req as Request & { userId: number }).userId;
 
-//   try {
-//     const result: QueryResult = await client.query(sql, [userId]);
-//     res.status(200).json({ success: true, posts: result.rows });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, error: 'Something went wrong' });
-//   }
-// });
+  const sql = `
+    SELECT 
+      p.postId as id, 
+      GetFullName(p.postAuthor) as author,
+      p.postAuthor as authorId, 
+      p.postTitle as title, 
+      p.postContent as content, 
+      p.postImgUrl as image, 
+      p.postLocation as location,
+      p.postCreatedAt as createdAt,
+      IsUnlocked(p.postId, $1) as isUnlocked
+    FROM POST p
+    JOIN PERSON p1 ON p.postAuthor = p1.personId
+    WHERE p.postId IN (SELECT unlockedPostPostId FROM UNLOCKEDPOST WHERE unlockedPostPersonId = $1)
+    `;
 
-// /* Returns all unlocked posts with all post content */
-// router.get('/posts/unlocked', async (req: Request, res: Response) => {
-//   console.log('In Get /posts/unlocked');
-
-//   const userId = (req as Request & { userId: number }).userId;
-
-//   const sql = `SELECT p.postId as id, CONCAT(p1.personFirstName, ' ', p1.personLastName) as author, p.postAuthor as authorId, p.postTitle as title, p.postContent as content, p.postImgUrl as image, p.postLocation as location
-//   FROM POST p
-//   JOIN PERSON p1 ON p.postAuthor = p1.personId
-//   WHERE (p.postId IN (
-//       SELECT unlockedPostPostId FROM UNLOCKEDPOST
-//       WHERE unlockedPostPersonId = $1
-//   ) OR p.postAuthor = $1)
-//   AND p.postExpiresAt > NOW();
-//   `;
-
-//   try {
-//     const result: QueryResult = await client.query(sql, [userId]);
-//     res.status(200).json({ success: true, posts: result.rows });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, error: 'Something went wrong' });
-//   }
-
-// });
-
-// // Save image
-// // const file = req.file;
-// let destinationPath;
-// console.log('req.file: ', req.file);
-// if (req.file) {
-//   const img = fs.readFileSync(req.file.path);
-
-//   // Define the destination path
-//   destinationPath = `uploads/${req.file.originalname}`;
-//   // const image = await Jimp.read(req.file.path);
-//   // await image.resize(300, 300).write(destinationPath);
-
-//   console.log('destinationPath: ', destinationPath);
-//   // console.log('bild2: ', image);
-
-//   // Move the file to the destination folder
-//   fs.writeFileSync(destinationPath, img);
-//   destinationPath = `/api/posts/${destinationPath}`;
-
-//   // Remove the file from the temporary location
-//   fs.unlinkSync(req.file.path);
-// }
+  try {
+    const result: QueryResult = await client.query(sql, [userId]);
+    res.status(200).json({ success: true, posts: result.rows });
+    console.log('result.rows in unlocked: ', result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+});

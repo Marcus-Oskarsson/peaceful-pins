@@ -1,0 +1,41 @@
+.post-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .post-container {
+    .post-header {
+      padding: 24px 16px 16px;
+      background-color: #5b2b48;
+
+      .post-title {
+        margin-bottom: 12px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.2rem;
+        line-height: 1.2em;
+      }
+
+      .post-info {
+        color: #fff;
+        font-size: 0.8rem;
+        line-height: 1.2em;
+      }
+    }
+
+    .post-body {
+      padding: 0 16px 24px;
+      background-color: #5b2b48;
+
+      .post-img {
+        margin-bottom: 8px;
+      }
+
+      .post-content {
+        color: #fff;
+        font-size: 1rem;
+        line-height: 1.2em;
+      }
+    }
+  }
+}
