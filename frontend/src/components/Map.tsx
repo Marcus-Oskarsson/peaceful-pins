@@ -1,7 +1,11 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { useWindowSize } from 'usehooks-ts';
+
+import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { usePosition } from '@hooks/usePosition';
+import { usePositionContext } from '@contexts/PositionContext';
+
 import { Post } from '@types';
 
 interface MapProps {
@@ -9,25 +13,34 @@ interface MapProps {
 }
 
 export function Map({ posts }: MapProps) {
-  console.log(posts[0].location.x, posts[0].location.y);
-  // TODO change center to user location
+  const positionContext = usePositionContext();
+  const size = useWindowSize();
 
-  const { latitude, longitude } = usePosition();
-  console.log(latitude, longitude);
+  const PersonIcon = new Icon({
+    iconUrl: 'https://news.ycombinator.com/y18.svg',
+    iconSize: [24, 24],
+  });
 
-  if (!latitude || !longitude) return null;
-
+  if (!positionContext?.latitude || !positionContext?.longitude) return null;
   return (
     <MapContainer
-      style={{ height: 736 }}
-      center={[latitude, longitude]}
-      zoom={14}
+      style={{ height: size.height - 64, zIndex: 1 }}
+      center={[positionContext.latitude, positionContext.longitude]}
+      zoom={12}
       scrollWheelZoom={false}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+
+      <Marker
+        position={[positionContext.latitude, positionContext.longitude]}
+        icon={PersonIcon}
+      >
+        <Popup>You are here</Popup>
+      </Marker>
+
       {posts.map((msg) => (
         <Marker
           key={msg.id}
@@ -38,7 +51,7 @@ export function Map({ posts }: MapProps) {
             },
           }}
         >
-          {!msg.isUnlocked && (
+          {!msg.isunlocked && (
             <Circle
               center={[msg.location.x, msg.location.y]}
               radius={200}

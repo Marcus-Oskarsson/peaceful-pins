@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS PERSON (
   personFirstname VARCHAR(50) NOT NULL,
   personLastname VARCHAR(50) NOT NULL,
   personEmail VARCHAR(100) UNIQUE NOT NULL,
-  personProfilePicture TEXT DEFAULT 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+  personProfilePicture TEXT,
   personPassword TEXT NOT NULL,
   personCreatedAt TIMESTAMP DEFAULT NOW(),
   personUpdatedAt TIMESTAMP DEFAULT NOW()
@@ -82,12 +82,12 @@ VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
         ('Test', 'Testsson', 'already.exist@mail.com', '$2b$08$ZmTFFf05dpb8VD6VjVvuJ.7r4iyG8Slu1o1lgSftNIBLAEW9iLAgq');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
-VALUES (1, 2, 'accepted');
-      -- ,(1, 4, 'accepted');
+VALUES (1, 2, 'accepted'),
+      (1, 4, 'accepted');
 
-INSERT INTO POST (postTitle, postContent, postImgUrl, postAuthor, postVisibility, postLocation, postExpiresAt)
-VALUES ('En titel', 'Ett meddelande', 'bild', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
-      ('for friends', 'text content', 'bild', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
+INSERT INTO POST (postTitle, postContent, postAuthor, postVisibility, postLocation, postExpiresAt)
+VALUES ('En titel', 'Ett meddelande', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
+      ('for friends', 'text content', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
 
 INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
 VALUES (2, 1);
@@ -166,3 +166,9 @@ WHERE (
   )
   )
 AND p.postExpiresAt > NOW();
+
+
+-- Get friends info
+SELECT p.* 
+FROM PERSON p
+WHERE p.personId IN (SELECT friendId FROM GetFriends(1));

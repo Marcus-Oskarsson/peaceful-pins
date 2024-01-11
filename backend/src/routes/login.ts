@@ -27,14 +27,12 @@ type User = {
 };
 
 router.post('/login', async (req: Request, res: Response) => {
-  console.log('In Post /login');
+  console.log('In Post /login', req.body);
   const { email, password }: NewUser = req.body.user;
 
-  console.log('email: ', email, 'password: ', password);
   const sql = `
     SELECT personId, personPassword, personFirstname, personLastname, personEmail, personProfilePicture FROM PERSON
     WHERE personEmail = $1`;
-
   try {
     const result: QueryResult<User> = await client.query(sql, [email]);
 
@@ -73,10 +71,11 @@ router.post('/login', async (req: Request, res: Response) => {
         );
 
         const newUser = {
-          firstName: user.personfirstname,
-          lastName: user.personlastname,
+          firstname: user.personfirstname,
+          lastname: user.personlastname,
+          fullname: user.personfirstname + ' ' + user.personlastname,
           email: user.personemail,
-          profilePicture: user.personprofilepicture,
+          profilepicture: user.personprofilepicture,
         };
 
         res

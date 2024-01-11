@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
   },
-  "include": ["src", "cypress.d.ts"],
+  "include": ["src", "cypress.d.ts", "cypress/component/Button.cy.tsx"],
   "extends": "./tsconfig.paths.json",
   "references": [{ "path": "./tsconfig.node.json" }],
 }

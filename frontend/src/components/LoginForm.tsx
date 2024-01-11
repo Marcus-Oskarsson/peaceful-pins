@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
 import { useLogin } from '@services/authenticationService';
+import { useUserContext } from '@contexts/UserContext';
 
 import { Button } from '@components/shared/Button';
 import { LabeledInput } from '@components/shared/LabeledInput';
@@ -10,6 +11,7 @@ import { Loading } from '@components/shared/Loading';
 
 import './LoginForm.scss';
 import { AxiosError } from 'axios';
+import { useEffect } from 'react';
 
 interface Values {
   email: string;
@@ -26,6 +28,7 @@ type CustomResponseError = {
 
 export function LoginForm() {
   const loginUser = useLogin();
+  const { setUser } = useUserContext();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -41,6 +44,12 @@ export function LoginForm() {
       },
     });
   }
+
+  useEffect(() => {
+    if (loginUser.isSuccess && setUser) {
+      setUser(loginUser.data.data.user);
+    }
+  }, [loginUser.isSuccess, setUser, loginUser.data]);
 
   if (loginUser.isSuccess) {
     return <Navigate to="/profile" replace={true} />;

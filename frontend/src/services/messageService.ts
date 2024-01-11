@@ -1,32 +1,26 @@
 // import axios from 'axios';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { Post } from '../types';
+import { LockedPost, UnlockedPost } from '../types';
 
 import postService from '../api/axios';
 
 type PostResponse = {
   success: boolean;
-  posts: Post[];
+  posts: UnlockedPost[] | LockedPost[];
 };
 
 // Mina egna posts
-async function getMyPosts(): Promise<Post[]> {
+async function getMyPosts(): Promise<PostResponse> {
   const response = await postService.get('/my-posts');
   return response.data;
 }
 
-// // Mina vänners posts (som jag låst upp - ska visas på nån egen sida)
-// async function getFriendsUnlockedPosts(): Promise<Post[]> {
-//   const response = await postService.get('/unlocked-friends-posts');
-//   return response.data;
-// }
-
-// // Offentliga posts (som jag låst upp - ska visas på nån egen sida)
-// async function getPublicUnlockedPosts(): Promise<Post[]> {
-//   const response = await postService.get('/unlocked-public-posts');
-//   return response.data;
-// }
+// Alla mina upplåsta posts (ska visas på nån egen sida)
+async function getMyUnlockedPosts(): Promise<PostResponse> {
+  const response = await postService.get('/posts/unlocked-posts');
+  return response.data;
+}
 
 // Mina vänners posts (både låsta och upplåsta - ska plottas på kartan)
 async function getFriendsPosts(): Promise<PostResponse> {
@@ -57,20 +51,6 @@ export function useGetMyPosts() {
   });
 }
 
-// export function useGetFriendsUnlockedPosts() {
-//   return useQuery({
-//     queryKey: ['unlocked-friends-posts'],
-//     queryFn: getFriendsUnlockedPosts,
-//   });
-// }
-
-// export function useGetPublicUnlockedPosts() {
-//   return useQuery({
-//     queryKey: ['unlocked-public-posts'],
-//     queryFn: getPublicUnlockedPosts,
-//   });
-// }
-
 export function useGetFriendsPosts() {
   return useQuery({
     queryKey: ['friends-posts'],
@@ -88,5 +68,12 @@ export function useGetPublicPosts() {
 export function useAddPost() {
   return useMutation({
     mutationFn: addPost,
+  });
+}
+
+export function useGetMyUnlockedPosts() {
+  return useQuery({
+    queryKey: ['my-unlocked-posts'],
+    queryFn: getMyUnlockedPosts,
   });
 }
