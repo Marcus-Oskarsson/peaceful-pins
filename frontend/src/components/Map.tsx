@@ -15,31 +15,37 @@ interface MapProps {
 
 function CustomMarker({ msg } : { msg: Post }) {
   const inDistance = useIndistance( {latitude: msg.location.x, longitude: msg.location.y} );
-
-  console.log("inDistance: ", inDistance)
+  
+  function unlock() {
+    console.log('unlock if in distance: ', inDistance);
+  }
 
   return (
     <Marker
       key={msg.id}
       position={[msg.location.x, msg.location.y]}
       eventHandlers={{
-        click: (e) => {
-          console.log(e);
+        click: () => {
+          !msg.isunlocked && unlock();
         },
-      }}
+      }} 
     >
       {!msg.isunlocked && (
         <Circle
           center={[msg.location.x, msg.location.y]}
           radius={200}
           eventHandlers={{
-            click: (e) => {
-              console.log(e);
-            },
+            click: unlock,
           }}
         />
       )}
-      <Popup>{msg.title}</Popup>
+      <Popup>
+        <div>
+          <p>{msg.author}</p>
+          <p>{msg.title}</p>
+          {msg.isunlocked ? <p>{msg.content}</p> : <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"><path d="M10 1.75a4.25 4.25 0 0 0-4.104 5.354L1.75 11.25v3h3v-1.5h1.5v-1.5h1.5L8.9 10.1c.359.098.728.148 1.1.15a4.25 4.25 0 0 0 0-8.5"></path><circle cx="10.75" cy="5.25" r=".5" fill="currentColor"></circle></g></svg>}
+        </div>
+      </Popup>
     </Marker>
   )
 }
@@ -49,7 +55,7 @@ export function Map({ posts }: MapProps) {
   const size = useWindowSize();
 
   const PersonIcon = new Icon({
-    iconUrl: 'https://news.ycombinator.com/y18.svg',
+    iconUrl: 'https://api.iconify.design/ph:person-simple-walk-bold.svg',
     iconSize: [24, 24],
   });
 
@@ -75,29 +81,9 @@ export function Map({ posts }: MapProps) {
 
       {posts.map((msg) => (
         <CustomMarker msg={msg} />
-        // <Marker
-        //   key={msg.id}
-        //   position={[msg.location.x, msg.location.y]}
-        //   eventHandlers={{
-        //     click: (e) => {
-        //       console.log(e);
-        //     },
-        //   }}
-        // >
-        //   {!msg.isunlocked && (
-        //     <Circle
-        //       center={[msg.location.x, msg.location.y]}
-        //       radius={200}
-        //       eventHandlers={{
-        //         click: (e) => {
-        //           console.log(e);
-        //         },
-        //       }}
-        //     />
-        //   )}
-        //   <Popup>{msg.title}</Popup>
-        // </Marker>
       ))}
     </MapContainer>
   );
 }
+
+

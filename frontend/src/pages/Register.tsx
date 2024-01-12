@@ -1,11 +1,18 @@
 import { RegisterForm } from '@components/RegisterForm';
+import './Register.scss';
+import { Link } from 'react-router-dom';
 
 export function Register() {
   return (
-    <div>
-      <h1>Welcome to the Signup Page</h1>
-      <p>This is the Signup page of your application.</p>
+    <div className='register'>
+      <h1>Register a new account</h1>
       <RegisterForm />
+      <p className='tooltip'>
+        Already a member? 
+        <Link to="/login">
+          <span className='link'> Sign in here</span>
+        </Link>
+      </p>
     </div>
   );
 }

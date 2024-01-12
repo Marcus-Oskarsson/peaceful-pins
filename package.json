@@ -1,0 +1,27 @@
+{
+  "name": "peaceful-pins",
+  "version": "1.0.0",
+  "description": "![Event parameter](https://github.com/Marcus-Oskarsson/Pally/actions/workflows/backend-looks-nice.yaml/badge.svg?event=push)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marcus-Oskarsson/peaceful-pins.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marcus-Oskarsson/peaceful-pins/issues"
+  },
+  "homepage": "https://github.com/Marcus-Oskarsson/peaceful-pins#readme",
+  "devDependencies": {
+    "husky": "^8.0.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
+}

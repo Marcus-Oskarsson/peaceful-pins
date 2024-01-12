@@ -1,0 +1,46 @@
+.home {
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 64px);
+
+  .title {
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    color: #efefef;
+    font-size: 2.8rem;
+    padding: 1.8rem;
+    max-width: 90%;
+    border-radius: 32px;
+    background-color: #01010160;
+  }
+
+  .intro-text {
+    position: absolute;
+    top: 25%;
+    left: 5%;
+    max-width: 90%;
+    color: #efefef;
+    padding:  1.8rem 1.8rem;
+    border-radius: 32px;
+    line-height: 1.4em;
+    background-color: #01010160;
+
+    .icon {
+      display: block;
+      margin-top: -16px;
+      position: absolute;
+      right: 20px;
+      font-size: 1.2rem;
+    }
+  }
+
+  .action-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #efefef;
+    max-width: 90%;
+  }
+}

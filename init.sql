@@ -76,9 +76,9 @@ CREATE TABLE IF NOT EXISTS REACTION (
 );
 
 INSERT INTO PERSON (personFirstname, personLastname, personEmail, personPassword)
-VALUES ('Marcus', 'Aurelius', 'm.a@mail.com', '123456'),
-        ('Seneca', 'the Younger', 's.y@mail.com', '123456'),
-        ('Epictetus', 'of Hierapolis', 'e.h@mail.com', '123456'),
+VALUES ('Marcus', 'Oskarsson', 'm.a@mail.com', '123456'),
+        ('Anon', 'the Younger', 's.y@mail.com', '123456'),
+        ('Erika', 'Andersson', 'e.h@mail.com', '123456'),
         ('Test', 'Testsson', 'already.exist@mail.com', '$2b$08$ZmTFFf05dpb8VD6VjVvuJ.7r4iyG8Slu1o1lgSftNIBLAEW9iLAgq');
 
 INSERT INTO FRIENDSHIP (friendshipPersonIdOne, friendshipPersonIdTwo, friendshipStatus)
@@ -86,8 +86,8 @@ VALUES (1, 2, 'accepted'),
       (1, 4, 'accepted');
 
 INSERT INTO POST (postTitle, postContent, postAuthor, postVisibility, postLocation, postExpiresAt)
-VALUES ('En titel', 'Ett meddelande', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
-      ('for friends', 'text content', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
+VALUES ('Titel', 'Hemligt meddelande', 1, 'public', '(57.765819, 12.052471)', NOW() + INTERVAL '1 DAY'),
+      ('Title', 'Hemligt meddelande', 1, 'friends', '(57.765818, 12.052471)', NOW() + INTERVAL '1 DAY');
 
 INSERT INTO UNLOCKEDPOST (unlockedPostPersonId, unlockedPostPostId)
 VALUES (2, 1);
@@ -113,11 +113,11 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE FUNCTION IsUnlocked(postId INT, personId INT) RETURNS BOOLEAN AS $$
+CREATE FUNCTION IsUnlocked(postIdToCheck INT, personId INT) RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM UNLOCKEDPOST
-    WHERE unlockedPostPostId = postId AND unlockedPostPersonId = personId
+    WHERE (unlockedPostPostId = postIdToCheck AND unlockedPostPersonId = personId) OR (SELECT postAuthor FROM POST WHERE postId = postIdToCheck) = personId
   );
 END; $$
 LANGUAGE plpgsql;

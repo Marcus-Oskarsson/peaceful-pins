@@ -21,7 +21,6 @@ interface NormalNavProps {
 
 function MobileNav({ isOpen, children }: MobileNavProps) {
   useLockedBody(isOpen);
-  console.log(isOpen);
   return (
     <nav className={!isOpen ? 'hidden nav-main' : 'nav-main'}>
       <ul className="nav-main-list">{children}</ul>

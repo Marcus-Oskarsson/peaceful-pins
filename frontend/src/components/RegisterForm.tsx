@@ -8,7 +8,7 @@ import { Button } from '@components/shared/Button';
 import { LabeledInput } from '@components/shared/LabeledInput';
 import { Loading } from '@components/shared/Loading';
 
-// import './RegisterForm.scss';
+import './RegisterForm.scss';
 import { AxiosError } from 'axios';
 import { NewUser } from '@types';
 
@@ -57,7 +57,7 @@ export function RegisterForm() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched }) => (
-        <Form>
+        <Form className='register-form'>
           <Field
             as={LabeledInput}
             label="Firstname"
@@ -110,7 +110,7 @@ export function RegisterForm() {
             </p>
           )}
           <Button data-test="register-button" variant="primary" type="submit">
-            Login
+            Register
           </Button>
           {registerUser.isError && (
             <p data-test="error-message">

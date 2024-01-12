@@ -1,1 +1,16 @@
-// scss code here
+.register-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+  padding: 0 32px;
+
+  .input-error {
+    margin-top: -16px;
+    color: red;
+    font-size: 12px;
+  }
+
+  .btn-login {
+    margin-top: auto;
+  }
+}

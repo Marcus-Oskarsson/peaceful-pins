@@ -39,8 +39,6 @@ export function CreatePost() {
     });
   }
 
-  console.log('positionContext', positionContext);
-
   if (!positionContext?.latitude || !positionContext?.longitude) {
     if (positionContext?.error) {
       return <div>{positionContext?.error}</div>;
