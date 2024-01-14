@@ -53,5 +53,5 @@ jobs:
         browser: chrome
         build: npm run build
         start: npm run preview
-        wait-on: 'http://localhost:5173'
+        wait-on: 'https://localhost:5173'
         config-file: cypress.config.ts
