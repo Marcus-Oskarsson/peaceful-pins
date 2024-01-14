@@ -7,12 +7,12 @@
     position: absolute;
     top: 10%;
     left: 5%;
+    max-width: 90%;
+    padding: 1.8rem;
     color: #efefef;
     font-size: 2.8rem;
-    padding: 1.8rem;
-    max-width: 90%;
-    border-radius: 32px;
     background-color: #01010160;
+    border-radius: 32px;
   }
 
   .intro-text {
@@ -20,17 +20,17 @@
     top: 25%;
     left: 5%;
     max-width: 90%;
+    padding: 1.8rem;
     color: #efefef;
-    padding:  1.8rem 1.8rem;
-    border-radius: 32px;
     line-height: 1.4em;
     background-color: #01010160;
+    border-radius: 32px;
 
     .icon {
-      display: block;
-      margin-top: -16px;
       position: absolute;
       right: 20px;
+      display: block;
+      margin-top: -16px;
       font-size: 1.2rem;
     }
   }
@@ -39,8 +39,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    color: #efefef;
     max-width: 90%;
+    color: #efefef;
+    transform: translateX(-50%);
   }
 }

@@ -57,7 +57,7 @@ export function RegisterForm() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched }) => (
-        <Form className='register-form'>
+        <Form className="register-form">
           <Field
             as={LabeledInput}
             label="Firstname"

@@ -1,4 +1,4 @@
-import { usePositionContext } from '@contexts/PositionContext';
+import { usePositionContext } from '@hooks/usePositionContext';
 import {
   LockedPost as LockedPostType,
   UnlockedPost as UnlockedPostType,
@@ -7,7 +7,7 @@ import {
 import './PostList.scss';
 
 type PostListProps = {
-  posts: LockedPostType[] | UnlockedPostType[];
+  posts: (LockedPostType | UnlockedPostType)[];
 };
 
 function UnlockedPost({ post }: { post: UnlockedPostType }) {
@@ -42,10 +42,8 @@ function UnlockedPost({ post }: { post: UnlockedPostType }) {
 
 function LockedPost({ post }: { post: LockedPostType }) {
   const positionContext = usePositionContext();
+  console.log(positionContext);
 
-  // TODO Bryt ut findDistance till en egen funktion (och testa den!)
-  // TODO Bestäm radie för att låsa upp meddelanden
-  // TODO Måste spara användarens position i context och välja uppdateringsfrekvens därifrån, också enklare att styra om anänvdaren inte accepterar att dela sin position (eller om den inte finns)
   function toRad(val: number) {
     return (val * Math.PI) / 180;
   }

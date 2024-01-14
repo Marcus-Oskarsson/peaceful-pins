@@ -1,4 +1,6 @@
 import { Formik, Form, Field, FieldInputProps } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { LabeledInput } from './shared/LabeledInput';
 import { Button } from './shared/Button';
 import { Loading } from './shared/Loading';
@@ -8,14 +10,16 @@ import { useAddPost } from '@services/messageService';
 import { newPost } from '@types';
 
 import './CreatePost.scss';
-import { usePositionContext } from '@contexts/PositionContext';
-
-// TODO måste lyfta ut state till context / parent eller nån session-storage
-// Just nu försvinner det om man stänger modalen
+import { usePositionContext } from '@hooks/usePositionContext';
 
 export function CreatePost() {
   const newMessage = useAddPost();
   const positionContext = usePositionContext();
+  const navigate = useNavigate();
+
+  function handleSuccess() {
+    toast.success('Message sent!');
+  }
 
   function handleSubmit(values: newPost) {
     const formData = new FormData();
@@ -34,7 +38,8 @@ export function CreatePost() {
     );
     newMessage.mutate(formData, {
       onSuccess: () => {
-        // TODO Make fancy animation
+        handleSuccess();
+        navigate('/');
       },
     });
   }

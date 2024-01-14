@@ -23,15 +23,12 @@ export type LoginCredentials = {
 };
 
 export type Post = {
-  id: string;
+  id: number;
   author: string;
   authorid: number;
   title: string;
-  content: string;
-  image: string;
   createdat: string;
   location: { x: number; y: number };
-  comments: Partial<Post>[];
   isunlocked: boolean;
 };
 
@@ -41,6 +38,9 @@ export type LockedPost = Post & {
 
 export type UnlockedPost = Post & {
   isunlocked: true;
+  content: string;
+  image: string;
+  comments: Partial<Post>[];
 };
 
 export type newPost = {
@@ -48,4 +48,9 @@ export type newPost = {
   content: string;
   visibility: 'public' | 'friends';
   image: File | null;
+};
+
+export type Position = {
+  location: { latitude: number; longitude: number };
+  accuracy: number;
 };

@@ -1,7 +1,7 @@
 // import axios from 'axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { LockedPost, UnlockedPost } from '../types';
+import { LockedPost, Position, UnlockedPost } from '../types';
 
 import postService from '../api/axios';
 
@@ -44,6 +44,14 @@ async function addPost(postData: FormData) {
   return response.data;
 }
 
+// Lås upp post
+async function unlockPost(postId: string, position: Position) {
+  const response = await postService.post(`/posts/unlock/${postId}`, {
+    position,
+  });
+  return response.data;
+}
+
 export function useGetMyPosts() {
   return useQuery({
     queryKey: ['my-posts'],
@@ -75,5 +83,23 @@ export function useGetMyUnlockedPosts() {
   return useQuery({
     queryKey: ['my-unlocked-posts'],
     queryFn: getMyUnlockedPosts,
+  });
+}
+
+export function useUnlockPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      postId,
+      position,
+    }: {
+      postId: string;
+      position: Position;
+    }) => unlockPost(postId, position),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['friends-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['public-posts'] });
+    },
   });
 }

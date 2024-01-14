@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>UML</title>
+</head>
+<body>
+   <pre class="mermaid">
+      sequenceDiagram
+ participant User as User
+ participant Frontend as Frontend
+ participant Server as Express
+ participant Database as PostgreSQL
+
+ User->>Frontend: User loads page
+ activate Frontend
+ note over Frontend: Get user location
+ Frontend-->>User: Permission request reading geographic location
+ alt User denies reading of geographic location
+    Frontend-->>User: Navigate to error page
+  else User allows reading of geographic location
+   alt Successfully reads User location
+     Frontend->>Frontend: Saves user location
+   else Can't read user location 
+     Frontend-->>User: Display error message 
+   end
+ end
+ deactivate Frontend
+
+ activate Frontend
+ note over Frontend: Save message
+ User->>Frontend: Writes message
+ User->>Frontend: Clicks button to send message
+ Frontend->>Server: Post request with message
+ Server->>Server: Authentication
+ alt Authentication fails
+     Server-->>Frontend: Unauthorized error
+     Frontend-->>User: Notifies user about authentication failure
+ else Authentication succeeds
+     Server->>Database: INSERT statement
+     Database-->>Server: rows
+     Server-->>Frontend: Replies with JSON and status 201
+     Frontend-->>User: Sends notification that message was successfully saved
+ end
+ deactivate Frontend
+   </pre>
+</body>
+</html>

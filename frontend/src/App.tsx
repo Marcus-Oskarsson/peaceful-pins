@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { queryClient } from '@utils/queryClient';
 import { PositionProvider } from '@contexts/PositionContext';
@@ -26,6 +28,18 @@ const Root = () => {
           <QueryClientProvider client={queryClient}>
             <Header />
             <main>
+              <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+              />
               <Outlet />
             </main>
           </QueryClientProvider>

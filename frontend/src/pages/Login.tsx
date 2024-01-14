@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom';
 
 export function Login() {
   return (
-    <div className='login'>
-      <h1 className='title'>Login</h1>
+    <div className="login">
+      <h1 className="title">Login</h1>
       <LoginForm />
-      
-      <p className='tooltip'>
-        Don't have an account? 
+
+      <p className="tooltip">
+        Don't have an account?
         <Link to="/register">
-          <span className='link'> Register a new account</span>
+          <span className="link"> Register a new account</span>
         </Link>
       </p>
     </div>

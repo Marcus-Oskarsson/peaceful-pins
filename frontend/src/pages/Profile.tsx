@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 
-import { useUserContext } from '@contexts/UserContext';
+import { useUserContext } from '@hooks/useUserContext';
 
 import { FriendList } from '@components/FriendList';
 import { ProfileInfo } from '@components/ProfileInfo';

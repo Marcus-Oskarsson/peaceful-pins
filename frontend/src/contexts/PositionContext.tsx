@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext } from 'react';
 import { usePosition } from '@hooks/usePosition';
 
 type PositionContextType = {
@@ -8,7 +8,7 @@ type PositionContextType = {
   error: string | null;
 } | null;
 
-const PositionContext = createContext<PositionContextType>(null);
+export const PositionContext = createContext<PositionContextType>(null);
 
 export const PositionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -21,5 +21,3 @@ export const PositionProvider: React.FC<{ children: React.ReactNode }> = ({
     </PositionContext.Provider>
   );
 };
-
-export const usePositionContext = () => useContext(PositionContext);
