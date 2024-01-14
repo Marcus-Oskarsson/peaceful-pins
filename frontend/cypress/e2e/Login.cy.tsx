@@ -9,7 +9,6 @@ describe('Login', () => {
     cy.get('[data-test="login-button"]').as('loginButton')
   })
 
-  // E2E test for login happy path
   it('logs in with correct credentials', () => {
     cy.intercept('POST', '/api/login').as('login')
     
@@ -22,7 +21,6 @@ describe('Login', () => {
     cy.url().should('include', '/profile')
   });
 
-  // Mock error response from backend
   it('gives error message on wrong credentials', () => {
     cy.intercept('POST', '/api/login', {statusCode: 401, body: {error: "Username or password is incorrect", success: false}}).as('login')
     cy.get('@emailInput').type('finns-ej@mail.com')
