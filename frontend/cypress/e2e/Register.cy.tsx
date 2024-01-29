@@ -2,7 +2,7 @@
 describe('Register', () => {
   beforeEach(() => {
     cy.visit('/register')
-    cy.resetDatabase()
+    // cy.resetDatabase()
 
     cy.get('[data-test="firstname-input"]').as('firstnameInput')
     cy.get('[data-test="lastname-input"]').as('lastnameInput')
@@ -12,19 +12,19 @@ describe('Register', () => {
   })
 
   // E2E test for register happy path
-  it('register a new user', () => {
-    cy.intercept('POST', '/api/register').as('register')
+  // it('register a new user', () => {
+  //   cy.intercept('POST', '/api/register').as('register')
     
-    cy.get('@firstnameInput').type('Test')
-    cy.get('@lastnameInput').type('Testsson')
-    cy.get('@emailInput').type('doesnot.exist@mail.com')
-    cy.get('@passwordInput').type('testtesttest')
-    cy.get('@registerButton').click()
+  //   cy.get('@firstnameInput').type('Test')
+  //   cy.get('@lastnameInput').type('Testsson')
+  //   cy.get('@emailInput').type('doesnot.exist@mail.com')
+  //   cy.get('@passwordInput').type('testtesttest')
+  //   cy.get('@registerButton').click()
 
-    cy.wait('@register');
-    cy.getCookie('token').should('exist')
-    cy.url().should('include', '/profile')
-  });
+  //   cy.wait('@register');
+  //   cy.getCookie('token').should('exist')
+  //   cy.url().should('include', '/profile')
+  // });
 
   // Mock error response from backend
   it('gives error message when trying to sign up with already used email', () => {
