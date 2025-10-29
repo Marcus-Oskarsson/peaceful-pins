@@ -9,7 +9,7 @@ export function Login() {
       <LoginForm />
 
       <p className="tooltip">
-        Don't have an account?
+        Don&apos;t have an account?
         <Link to="/register">
           <span className="link"> Register a new account</span>
         </Link>
