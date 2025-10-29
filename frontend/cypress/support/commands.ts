@@ -28,7 +28,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
   Cypress.Commands.add('resetDatabase', () => {
-    return cy.exec('docker exec some-postgres bash -c "psql -U postgres -d postgres -f /docker-entrypoint-initdb.d/init.sql"')
+    return cy.exec('sudo docker exec some-postgres bash -c "psql -U postgres -d postgres -f /docker-entrypoint-initdb.d/init.sql"')
   });
 
   // const user = {
