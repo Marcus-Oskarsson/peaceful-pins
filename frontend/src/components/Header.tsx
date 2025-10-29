@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useOnClickOutside, useLockedBody, useWindowSize } from 'usehooks-ts';
+import { useOnClickOutside, useScrollLock, useWindowSize } from 'usehooks-ts';
 import Hamburger from 'hamburger-react';
 
 import { useAuthCheck } from '@services/authenticationService';
@@ -20,7 +20,16 @@ interface NormalNavProps {
 }
 
 function MobileNav({ isOpen, children }: MobileNavProps) {
-  useLockedBody(isOpen);
+  const { lock, unlock } = useScrollLock();
+
+  useEffect(() => {
+    if (isOpen) {
+      lock();
+    } else {
+      unlock();
+    }
+  }, [isOpen, lock, unlock]);
+
   return (
     <nav className={!isOpen ? 'hidden nav-main' : 'nav-main'}>
       <ul className="nav-main-list">{children}</ul>

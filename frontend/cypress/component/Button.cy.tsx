@@ -27,6 +27,7 @@ describe('Button.cy.tsx', () => {
   it('Button with onClick prop calls function when clicked', () => {
     const onClick = cy.stub()
     cy.mount(<Button onClick={onClick}>Click me</Button>)
-    cy.get('button').click().then(() => {expect(onClick).to.be.called})
+    cy.get('button').click()
+    cy.wrap(onClick).should('be.called')
   })
 })

@@ -34,7 +34,7 @@ export function About() {
       <h2>Get in Touch</h2>
       <p>
         If you have any questions or feedback, please feel free to contact us at
-        [contact information]. We'd love to hear from you!
+        [contact information]. We&apos;d love to hear from you!
       </p>
     </div>
   );

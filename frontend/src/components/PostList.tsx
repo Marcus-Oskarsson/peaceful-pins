@@ -89,9 +89,9 @@ export function PostList({ posts }: PostListProps) {
     <ul className="post-list">
       {posts.map((post) => {
         if (post.isunlocked) {
-          return <UnlockedPost post={post} />;
+          return <UnlockedPost key={post.id} post={post} />;
         } else {
-          return <LockedPost post={post} />;
+          return <LockedPost key={post.id} post={post} />;
         }
       })}
     </ul>

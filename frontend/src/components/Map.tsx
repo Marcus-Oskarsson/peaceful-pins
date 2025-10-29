@@ -116,7 +116,7 @@ export function Map({ posts }: MapProps) {
       </Marker>
 
       {posts.map((msg) => (
-        <CustomMarker msg={msg} />
+        <CustomMarker key={msg.id} msg={msg} />
       ))}
     </MapContainer>
   );

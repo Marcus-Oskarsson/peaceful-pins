@@ -54,9 +54,14 @@
         content: '';
       }
     }
+
+    @include respond-to($tablet) {
+      display: none;
+    }
   }
 
   .hamburger-react {
+    flex-shrink: 0;
     margin-right: 16px;
 
     &:hover,
