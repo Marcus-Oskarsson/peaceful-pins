@@ -8,9 +8,6 @@ const {
 } = require('@badeball/cypress-cucumber-preprocessor/esbuild')
 const { defineConfig } = require('cypress')
 
-const react = require('@vitejs/plugin-react')
-const istanbul = require('vite-plugin-istanbul')
-
 module.exports = defineConfig({
   env: {
     codeCoverage: {
@@ -43,33 +40,37 @@ module.exports = defineConfig({
     devServer: {
       framework: "react",
       bundler: "vite",
-      viteConfig: {
-        plugins: [react(), istanbul({
-          cypress: true,
-          requireEnv: false,
-        })],
-        resolve: {
-          alias: {
-            '@styles': '/src/styles',
-            '@components': '/src/components',
-            '@pages': '/src/pages',
-            '@utils': '/src/utils',
-            '@assets': '/src/assets',
-            '@services': '/src/services',
-            '@types': '/src/types/index',
-            '@hooks': '/src/hooks',
-            '@contexts': '/src/contexts',
-          },
-        },
-        server: {
-          proxy: {
-            '/api': {
-              target: 'http://localhost:3000',
-              changeOrigin: true,
-              rewrite: (path) => path.replace(/^\/api/, ''),
+      async viteConfig() {
+        const react = await import('@vitejs/plugin-react')
+        const istanbul = await import('vite-plugin-istanbul')
+        return {
+          plugins: [react.default(), istanbul.default({
+            cypress: true,
+            requireEnv: false,
+          })],
+          resolve: {
+            alias: {
+              '@styles': '/src/styles',
+              '@components': '/src/components',
+              '@pages': '/src/pages',
+              '@utils': '/src/utils',
+              '@assets': '/src/assets',
+              '@services': '/src/services',
+              '@types': '/src/types/index',
+              '@hooks': '/src/hooks',
+              '@contexts': '/src/contexts',
             },
           },
-        },
+          server: {
+            proxy: {
+              '/api': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+              },
+            },
+          },
+        }
       },
     },
     setupNodeEvents(on, config) {
